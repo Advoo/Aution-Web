@@ -632,7 +632,14 @@ p b,p strong,li b,li strong{font-family:'Inter',sans-serif;font-weight:700;text-
 
 @media(max-width:1200px){.team-grid{grid-template-columns:repeat(2,1fr);gap:80px 48px}}
 @media(max-width:768px){
-  .team-grid{grid-template-columns:1fr;gap:64px}
+  .team-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+    justify-content:center;
+  }
+  .team-member{min-width:0}
+  .team-member:last-child{grid-column:2}
   .image-wrapper{width:250px;height:250px}
   .team-member h2{font-size:26px}
   .team-member .role{font-size:17px}
