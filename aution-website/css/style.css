@@ -850,3 +850,274 @@ p b,p strong,li b,li strong{font-family:'Inter',sans-serif;font-weight:700;text-
   .overview-grid{grid-template-columns:1fr}
   .ab-hero-badge{position:static;display:inline-flex;margin-top:20px}
 }
+
+/* ============================================================
+   MOBILE OPTIMISATION — 320 px – 768 px
+   All breakpoints below are additive / override the desktop
+   and 980 px layers declared above.
+   ============================================================ */
+
+@media(max-width:768px){
+
+  /* ── Global layout ── */
+  .wrap{padding-inline:clamp(16px,4.5vw,24px)}
+  .band{padding-block:clamp(44px,7vw,72px)}
+  .band-sm{padding-block:clamp(28px,5vw,52px)}
+
+  /* Body-text floor: 16 px — no paragraph copy smaller than this */
+  p,.svc-body p,.card p,.quote p,.vision-card p,.ep-body p,
+  .step p,.feat-list span.d,.tl-item p,.opp p,.why-card p,
+  .story-card p,.overview-card span,.mv-card p,
+  .ab-story-content>p,.ab-hero-text p,.ab-video-label p,
+  .val-card p,.cta p,.sec-title p,.welcome-text p,
+  .mission p,.closing p,.ab-cta p,.editorial-p{
+    font-size:16px;line-height:1.72
+  }
+
+  /* Tap targets ≥ 44 px */
+  .btn{min-height:44px}
+  .btn-lg{min-height:52px}
+  .more{min-height:44px;display:inline-flex;align-items:center;gap:6px}
+  .trip-btn{min-height:44px;display:inline-flex;align-items:center}
+  .foot-col a{padding-block:8px}
+  .foot-social a{width:44px;height:44px}
+  .chat-q{min-height:44px}
+
+  /* ── Header ── */
+  .header{height:64px;padding:0 16px}
+  .logo-section img{height:36px}
+  .brand-name{font-size:1.18rem}
+  .brand-tagline{font-size:.6rem}
+
+  /* ── Hero (index) ── */
+  .hero .wrap{padding-block:clamp(80px,15vw,120px) clamp(32px,5vw,52px)}
+  .hero h1{white-space:normal;font-size:clamp(2.8rem,10vw,4.2rem)}
+  .hero-cta{flex-direction:column;gap:10px;align-items:stretch}
+  .hero-cta .btn{width:100%;justify-content:center;flex:unset;min-width:unset}
+  /* Hero booking card — single column */
+  .hero-card{
+    grid-template-columns:1fr;
+    padding:18px 16px;
+    border-radius:12px;
+    margin-inline:0;
+    row-gap:12px;
+  }
+  .hero-card>.field-row{grid-column:auto;grid-template-columns:1fr}
+  .hero-card>#qbGo{grid-column:auto;width:100%}
+  .hero-card>#qbFull{grid-column:auto}
+
+  /* ── Service icon strip ── */
+  .strip .wrap{grid-template-columns:1fr}
+  .strip-item{border-right:none;border-bottom:1px solid rgba(17,24,39,.06)}
+  .strip-item:last-child{border-bottom:none}
+
+  /* ── Welcome section (index) — video before text ── */
+  .welcome-layout{display:flex;flex-direction:column;gap:28px}
+  .welcome-media{order:-1}           /* pull video to top */
+  .welcome-text{order:1;text-align:left}
+  .welcome-actions{
+    flex-direction:column;
+    align-items:stretch;
+    justify-content:flex-start;
+    gap:10px;
+    margin-top:24px;
+  }
+  .welcome-actions .btn{width:100%;justify-content:center}
+  .video-card{aspect-ratio:16/9;border-radius:14px}
+
+  /* ── Vision cards ── */
+  .vision{padding:clamp(48px,7vw,72px) 0}
+  .vision-grid{grid-template-columns:1fr;gap:16px;margin-top:28px}
+
+  /* ── Mission statement ── */
+  .mission{margin:clamp(48px,7vw,72px) auto;padding:0}
+  .mission h2{font-size:clamp(1.8rem,5.5vw,2.6rem)}
+
+  /* ── Service cards: 1 per row ── */
+  .g-2,.g-3{grid-template-columns:1fr}
+  .svc-body{padding:18px 18px 22px}
+  .svc-body h3{font-size:1.1rem}
+
+  /* ── Stats strip: 2 col ── */
+  .stats-pro{grid-template-columns:1fr 1fr}
+  .stat-pro{border-bottom:1px solid var(--line)}
+  .stat-pro:nth-child(even){border-right:none}
+  .stat-pro:nth-last-child(-n+2){border-bottom:none}
+
+  /* ── Feature / benefit cards (g-4): 2 col ── */
+  .g-4{grid-template-columns:1fr 1fr;gap:14px}
+  .card{padding:20px 18px}
+  .card h3{font-size:1rem}
+
+  /* ── Section headings ── */
+  .sec-title h2{font-size:clamp(1.8rem,5.5vw,2.6rem)}
+
+  /* ── CTA band — full-width buttons ── */
+  .cta-actions{flex-direction:column;align-items:stretch;gap:10px}
+  .cta-actions .btn{width:100%;justify-content:center;flex:unset;min-width:unset}
+  .cta h2{font-size:clamp(1.8rem,6vw,2.6rem)}
+
+  /* ── Footer ── */
+  .foot-top{grid-template-columns:1fr;gap:28px}
+  .foot-brand{grid-column:auto}
+  .foot-bottom{flex-direction:column;align-items:flex-start;gap:12px;padding-block:18px}
+
+  /* ── Page hero (inner pages) ── */
+  .page-hero{padding-block:clamp(24px,5vw,44px) clamp(32px,5vw,52px)}
+  .page-hero h1{font-size:clamp(1.8rem,7.5vw,2.8rem)}
+
+  /* ── Form fields ── */
+  .field-row{grid-template-columns:1fr}
+
+  /* ─────────── ABOUT PAGE ─────────── */
+
+  .ab-hero{padding:clamp(48px,8vw,72px) 0}
+  .ab-hero-layout{gap:32px}
+  .ab-hero-text h1{font-size:clamp(2.4rem,7vw,3.6rem)}
+  .ab-hero-actions{flex-direction:column;align-items:stretch;gap:10px}
+  .ab-hero-actions .btn{width:100%;justify-content:center}
+
+  .ab-story-content h2{font-size:clamp(1.8rem,5.5vw,2.4rem)}
+  .story-cards{gap:12px}
+
+  /* Podcast banner — play button (video) before description */
+  .ab-video{min-height:400px}
+  .ab-video-inner{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:20px;
+    padding-block:clamp(44px,7vw,68px);
+  }
+  .ab-video-play{order:-1;align-self:flex-start}
+  .ab-video-label{order:1;width:100%}
+  .ab-video-label h2{font-size:clamp(1.5rem,5.5vw,2.2rem)}
+  .ab-video-label .btn{width:100%;justify-content:center}
+
+  /* Mission & Vision — stack vertically (already 1-col at 980 px) */
+  .mv-grid{grid-template-columns:1fr}
+  .mv-card{padding:clamp(26px,5vw,40px) clamp(20px,4vw,30px)}
+  .mv-card h3{font-size:clamp(1.3rem,4.5vw,1.7rem)}
+
+  /* Why choose AUTION */
+  .why-grid{grid-template-columns:1fr 1fr;gap:14px}
+  .why-card{padding:18px 14px 22px}
+  .why-card h4{font-size:.98rem}
+
+  /* Company overview */
+  .overview-grid{grid-template-columns:1fr}
+
+  /* About CTA */
+  .ab-cta{padding:clamp(56px,8vw,88px) 0}
+  .ab-cta h2{font-size:clamp(2rem,6.5vw,3rem)}
+  .ab-cta-inner{max-width:100%}
+  .ab-cta-actions{flex-direction:column;align-items:stretch;gap:10px}
+  .ab-cta-actions .btn{width:100%;justify-content:center}
+
+  /* ─────────── TEAM PAGE ─────────── */
+
+  .team-section{padding:clamp(40px,6vw,60px) clamp(16px,4vw,24px)}
+  .team-heading{
+    font-size:clamp(1.8rem,6vw,2.4rem);
+    text-align:left;
+    margin-bottom:clamp(32px,6vw,48px);
+  }
+
+  /* Flexbox grid: 3 per row; last incomplete row auto-centers */
+  .team-grid{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:32px 20px;
+    grid-template-columns:unset;   /* neutralise the grid fallback */
+  }
+  .team-member{
+    flex:0 0 calc(33.333% - 14px);
+    min-width:0;
+    text-align:center;
+  }
+  .team-member:last-child{grid-column:unset} /* remove desktop hack */
+
+  /* Round profile images — responsive size */
+  .image-wrapper{
+    width:min(160px,80%);
+    height:auto;
+    aspect-ratio:1;
+    border-radius:50%;
+    margin:0 auto 16px;
+  }
+  .image-wrapper img{border-radius:50%}
+  .team-member h2{font-size:clamp(.9rem,2.6vw,1.15rem);line-height:1.2;margin-bottom:6px}
+  .team-member .role{font-size:12px;min-height:unset;margin-bottom:8px}
+  .team-member a{font-size:11px;word-break:break-all;margin-bottom:10px}
+  .team-member blockquote{font-size:.8rem;line-height:1.5;max-width:100%}
+
+  /* Values section */
+  .values-grid{grid-template-columns:1fr}
+  .val-card{
+    border-left:none;
+    border-top:1px solid rgba(255,255,255,.12);
+    padding:28px 0;
+  }
+  .val-card:first-child{border-top:none;padding-top:0}
+  .vc-num{font-size:2.8rem}
+
+  /* ─────────── BOOK PAGE ─────────── */
+  .book-layout{gap:24px}
+  #map{height:280px;order:-1}
+  .est-bar{flex-direction:column;gap:10px}
+  .est{width:100%;min-width:unset}
+
+  /* ─────────── COMMUNITY PAGE ─────────── */
+  .join-grid{grid-template-columns:1fr}
+
+  /* ─────────── CONTACT PAGE ─────────── */
+  .contact-grid{gap:24px}
+
+  /* ─────────── WHO-INTRO (team page) ─────────── */
+  .who-intro{gap:28px}
+  .who-intro h2{font-size:clamp(2rem,6vw,3rem)}
+}
+
+/* ── 480 px and below: 375 / 390 / 430 iPhones ── */
+@media(max-width:480px){
+
+  /* Team: 2 per row so last row is always full (8 members ÷ 2 = 4 even rows) */
+  .team-member{flex:0 0 calc(50% - 10px)}
+  .team-grid{gap:28px 12px}
+  .image-wrapper{width:min(140px,70%)}
+  .team-member h2{font-size:.9rem}
+  .team-member .role{font-size:11px}
+  .team-member a{font-size:10px}
+  .team-member blockquote{font-size:.78rem}
+
+  /* Story cards: 1 col */
+  .story-cards{grid-template-columns:1fr}
+
+  /* Why grid: 1 col */
+  .why-grid{grid-template-columns:1fr}
+
+  /* g-4 cards: 1 col */
+  .g-4{grid-template-columns:1fr}
+
+  /* Stats pro: 1 col */
+  .stats-pro{grid-template-columns:1fr}
+  .stat-pro{border-right:none;border-bottom:1px solid var(--line)}
+  .stat-pro:last-child{border-bottom:none}
+  .stat-pro:nth-child(even){border-right:none}
+  .stat-pro:nth-last-child(-n+2){border-bottom:revert}
+
+  /* Headings tighter */
+  .hero h1{font-size:clamp(2.4rem,10vw,3.6rem)}
+  .sec-title h2{font-size:clamp(1.6rem,7vw,2.2rem)}
+  .page-hero h1{font-size:clamp(1.6rem,8vw,2.4rem)}
+  .mission h2{font-size:clamp(1.6rem,7vw,2.2rem)}
+}
+
+/* ── 375 px: extra-tight (iPhone SE / older) ── */
+@media(max-width:375px){
+  .hero h1{font-size:clamp(2.2rem,11vw,3rem)}
+  .brand-name{font-size:1.08rem}
+  .team-member{flex:0 0 calc(50% - 8px)}
+  .team-grid{gap:24px 10px}
+  .image-wrapper{width:min(115px,62%)}
+}
