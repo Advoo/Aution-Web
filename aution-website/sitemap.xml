@@ -2,36 +2,36 @@
 
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
-<url>
-<loc>https://aution.co.za/</loc>
-</url>
+  <url>
+    <loc>https://aution.co.za/</loc>
+  </url>
 
-<url>
-<loc>https://aution.co.za/about.html</loc>
-</url>
+  <url>
+    <loc>https://aution.co.za/about.html</loc>
+  </url>
 
-<url>
-<loc>https://aution.co.za/services.html</loc>
-</url>
+  <url>
+    <loc>https://aution.co.za/services.html</loc>
+  </url>
 
-<url>
-<loc>https://aution.co.za/team.html</loc>
-</url>
+  <url>
+    <loc>https://aution.co.za/team.html</loc>
+  </url>
 
-<url>
-<loc>https://aution.co.za/community.html</loc>
-</url>
+  <url>
+    <loc>https://aution.co.za/community.html</loc>
+  </url>
 
-<url>
-<loc>https://aution.co.za/media.html</loc>
-</url>
+  <url>
+    <loc>https://aution.co.za/media.html</loc>
+  </url>
 
-<url>
-<loc>https://aution.co.za/contact.html</loc>
-</url>
+  <url>
+    <loc>https://aution.co.za/contact.html</loc>
+  </url>
 
-<url>
-<loc>https://aution.co.za/book.html</loc>
-</url>
+  <url>
+    <loc>https://aution.co.za/book.html</loc>
+  </url>
 
 </urlset>
