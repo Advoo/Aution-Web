@@ -4,21 +4,21 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
-      AUTION | Always in Motion | Transport, Community, Media & Youth
-      Development
+      AUTION | Your Personal Chauffuer in Cape Town | Reliable Fixed Fares.
+      Always in Motion.
     </title>
     <meta
       name="description"
-      content="AUTION (Pty) Ltd — Always in Motion. A Cape Town company providing reliable transport solutions, community initiatives, The Collection Podcast, and youth-focused programmes designed to connect people, create opportunities and move the future forward."
+      content="AUTION (Pty) Ltd — Always in Motion - a registered Cape Town chauffeur service with one fixed fare per ride, whether you're travelling solo or with company. Choose Solo, Group or XL, and enjoy On-Board Wi-Fi, Songs of Choice, and easy return trips on every trip"
     />
     <meta name="theme-color" content="#0A1B2E" />
     <meta
       property="og:title"
-      content="AUTION | Always in Motion | Transport, Community & Media"
+      content="AUTION | Your Personal Chauffeur in Cape Town | Fixed Far | Always in Motion"
     />
     <meta
       property="og:description"
-      content="Safe, student transport across Cape Town — plus youth development, The Collection Podcast, community events and chess coaching. Always in Motion."
+      content="Safe, reliable, and registered chauffeur service across Cape Town. One fixed fare per trip, whether you're travelling solo or with company. Choose Solo, Group or XL, and enjoy On-Board Wi-Fi, Songs of Choice, and easy return trips on every trip."
     />
     <meta
       property="og:image"
@@ -79,8 +79,7 @@
           "Youth Leadership",
           "Community Development",
           "Media",
-          "Podcast Production",
-          "Chess Coaching"
+          "Podcast Production"
         ],
         "sameAs": [
           "https://www.instagram.com/aution2026",
@@ -135,8 +134,8 @@
     <div class="topbar">
       <div class="wrap topbar-grid">
         <div class="topbar-left">
-          Student transport across Cape Town · Safe · Registered · Always in
-          Motion
+          Personal Chauffeur Service across Cape Town | Fixed Fares | On-Board
+          Wi-Fi | Songs of Choice
         </div>
         <div class="topbar-right">
           <span>Always in Motion.</span>
@@ -182,7 +181,7 @@
                 /></svg
             ></a>
             <a
-              href="https://www.instagram.com/aution2026?igsh=MXR4emF2YjE4eGlzeg=="
+              href="https://www.instagram.com/_aution?igsh=ZjdmMzdmYjhibnh2"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Instagram"
@@ -214,7 +213,7 @@
     <!-- ===== HEADER ===== -->
     <header class="header" id="nav">
       <a href="index.html" class="logo-section" aria-label="AUTION home">
-        <img src="assets/img/Web.png" alt="AUTION Logo" />
+        <img src="assets/img/AutionLogo.jpg" alt="AUTION Logo" />
         <div class="brand">
           <span class="brand-name">AUT<span class="di">I</span>ON</span>
           <span class="brand-tagline">Always In Motion</span>
@@ -250,6 +249,7 @@
       <a href="community.html" data-page="community">Community</a>
       <a href="media.html" data-page="media">Media</a>
       <a href="contact.html" data-page="contact">Contact</a>
+
       <a href="book.html" class="btn btn-primary">Book a trip</a>
     </aside>
 
@@ -261,13 +261,14 @@
           style="background-image: url(&quot;assets/img/about-story.jpg&quot;)"
         ></div>
         <div class="wrap">
-          <div class="reveal">
-            <span class="hero-eyebrow">Aution has a chauffeur for you</span>
+          <div class="hero-text reveal">
+            <span class="hero-eyebrow">Your personal chauffeur, on call</span>
             <h1>Always in Motion.</h1>
             <div class="bar"></div>
             <p class="sub">
-              Personalised and consistent student and young professional
-              transport.
+              One fixed fare, whether it's just you or the whole car. Tell us
+              where you're headed and we'll send a driver who's actually
+              expecting you.
             </p>
             <div class="hero-cta">
               <a href="book.html" class="btn btn-primary btn-lg"
@@ -291,34 +292,66 @@
           </div>
           <div class="hero-card reveal d1">
             <h3>Get a quick quote</h3>
-            <p class="hc-sub">Pick your route — we'll confirm on WhatsApp.</p>
-            <div class="field">
-              <label>Your name</label
-              ><input
-                id="qbName"
-                type="text"
-                placeholder="e.g. Lindiwe"
-                autocomplete="name"
-              />
-            </div>
-            <div class="field">
-              <label>Contact number</label
-              ><input
-                id="qbPhone"
-                type="tel"
-                placeholder="082 123 4..."
-                autocomplete="tel"
-              />
-            </div>
-            <div class="field-row">
-              <div class="field">
-                <label>Pickup</label
-                ><select id="qbFrom"></select>
+            <p class="hc-sub">Pick your route and get confirm on WhatsApp.</p>
+            <div class="loc-group" id="qbLocGroup">
+              <div class="loc-field loc-field--pickup" id="pickupRow">
+                <label for="pickup">Pickup Location</label>
+                <div class="loc-input-wrap">
+                  <span class="loc-pin" aria-hidden="true"></span>
+                  <input
+                    id="pickup"
+                    type="text"
+                    placeholder="Enter pickup location"
+                    autocomplete="off"
+                  />
+                  <button
+                    type="button"
+                    class="loc-clear"
+                    data-clear="pickup"
+                    aria-label="Clear pickup"
+                  >
+                    ✕
+                  </button>
+                  <div
+                    class="loc-suggest"
+                    id="pickupSuggest"
+                    role="listbox"
+                  ></div>
+                </div>
               </div>
-              <div class="field">
-                <label>Destination</label
-                ><select id="qbTo"></select>
+              <div class="loc-field loc-field--dest" id="destinationRow">
+                <label for="destination">Destination</label>
+                <div class="loc-input-wrap">
+                  <span class="loc-pin" aria-hidden="true"></span>
+                  <input
+                    id="destination"
+                    type="text"
+                    placeholder="Where to?"
+                    autocomplete="off"
+                  />
+                  <button
+                    type="button"
+                    class="loc-clear"
+                    data-clear="destination"
+                    aria-label="Clear destination"
+                  >
+                    ✕
+                  </button>
+                  <div
+                    class="loc-suggest"
+                    id="destinationSuggest"
+                    role="listbox"
+                  ></div>
+                </div>
               </div>
+              <button
+                type="button"
+                class="loc-swap"
+                id="qbSwap"
+                aria-label="Swap pickup and destination"
+              >
+                ⇅
+              </button>
             </div>
             <button class="btn btn-wa btn-block btn-lg" id="qbGo">
               <svg viewBox="0 0 24 24" fill="currentColor">
@@ -345,6 +378,132 @@
         </div>
       </section>
 
+      <!-- ON BOARD -->
+      <section class="strip">
+        <div class="wrap">
+          <div class="strip-item">
+            <div class="si">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+              >
+                <path
+                  d="M5 12.55a11 11 0 0114.08 0"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M1.42 9a16 16 0 0121.16 0"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M8.53 16.11a6 6 0 016.95 0"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <line
+                  x1="12"
+                  y1="20"
+                  x2="12.01"
+                  y2="20"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </div>
+            <div>
+              <b>Free Wi-Fi</b
+              ><span>Scan the in-car QR code, connect instantly</span>
+            </div>
+          </div>
+          <div class="strip-item">
+            <div class="si">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+              >
+                <path
+                  d="M9 18V5l12-2v13"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <circle cx="6" cy="18" r="3" />
+                <circle cx="18" cy="16" r="3" />
+              </svg>
+            </div>
+            <div>
+              <b>Your music</b
+              ><span>Pick the playlist for your ride (Optional).</span>
+            </div>
+          </div>
+          <div class="strip-item">
+            <div class="si">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+              >
+                <path
+                  d="M17 1l4 4-4 4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M3 11V9a4 4 0 014-4h14"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M7 23l-4-4 4-4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M21 13v2a4 4 0 01-4 4H3"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </div>
+            <div>
+              <b>Easy return trips</b
+              ><span
+                >Book a return trip with one click and get a chauffeur for the
+                day</span
+              >
+            </div>
+          </div>
+          <div class="strip-item">
+            <div class="si">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+              >
+                <path d="M12 22v-5" stroke-linecap="round" />
+                <path d="M9 8V2" stroke-linecap="round" />
+                <path d="M15 8V2" stroke-linecap="round" />
+                <path
+                  d="M18 8v5a4 4 0 01-4 4h-4a4 4 0 01-4-4V8z"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </div>
+            <div>
+              <b>Charging ports</b
+              ><span>Keep your phone topped up on the go</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- WELCOME TO AUTION -->
       <section class="welcome">
         <div class="welcome-eyebrow">
@@ -354,9 +513,9 @@
           <div class="welcome-text">
             <p class="sub">
               AUTION is an ecosystem transforming how young people connect,
-              move, learn, and grow. We deliver reliable transport solutions
-              across Cape Town while building a community driven by innovation,
-              leadership, entrepreneurship, and opportunity.
+              move, learn, and grow. We deliver reliable smart transport
+              solutions across Cape Town while building a community driven by
+              innovation, leadership, entrepreneurship, and opportunity.
             </p>
             <div class="welcome-actions">
               <a href="about.html" class="btn btn-primary">Learn More</a>
@@ -396,7 +555,7 @@
         <h2>Whats in AUTION</h2>
         <div class="vision-grid">
           <div class="vision-card">
-            <h3>Premium Mobility</h3>
+            <h3>Premium Chauffeur</h3>
             <p>
               Safe, organised, and dependable transportation connecting
               campuses, residences, airports, professionals, schools, and
@@ -406,18 +565,10 @@
           <div class="vision-card">
             <h3>Media &amp; Knowledge</h3>
             <p>
-              The Collection Podcast along side the Aution Community shares
-              conversations on entrepreneurship, innovation, university life,
-              leadership, youth development, and the ideas shaping tomorrow.
-            </p>
-          </div>
-
-          <div class="vision-card">
-            <h3>Chess Coaching</h3>
-            <p>
-              Join our Chess Coaching Programme that are held weekly at Unibell
-              Residence , where students can develop their strategic thinking
-              and chess competative skills.
+              The AUTION media ecosystem includes The Collection Podcast, a
+              platform for conversations on entrepreneurship, innovation,
+              university life, leadership, youth development, and the ideas
+              shaping tomorrow.
             </p>
           </div>
         </div>
@@ -427,9 +578,10 @@
       <section class="mission">
         <h2>Our Mission</h2>
         <p>
-          To build intelligent systems, trusted services, and empowering
-          communities that help people move, learn, connect, and create
-          opportunities while shaping a smarter future for Africa.
+          To deliver best-in-class transport services for students,
+          professionals, and communities across Cape Town, while fostering a
+          culture of innovation, leadership, and opportunity for the next
+          generation.
         </p>
       </section>
 
@@ -442,7 +594,7 @@
             <div class="bar"></div>
             <p>
               Every kind of trip, handled properly — from a single ride to a
-              fully planned group outing.
+              fully planned group outing. Get AUTION experience.
             </p>
           </div>
           <div class="grid g-3">
@@ -537,9 +689,107 @@
         </div>
       </section>
 
+      <!-- RIDE TIERS -->
+      <section class="band-sm tiers-section">
+        <div class="wrap">
+          <div class="sec-title reveal">
+            <span class="eyebrow">Choose your ride</span>
+            <h2>One fixed fare, three ways to ride</h2>
+            <div class="bar"></div>
+            <p>
+              The fare is set by the trip, not the number of people in the car —
+              so riding solo costs exactly the same as filling every seat.
+            </p>
+          </div>
+          <div class="tiers-grid">
+            <div class="tier-card reveal">
+              <div class="tier-icon">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                >
+                  <path
+                    d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+              </div>
+              <div class="tier-name">Solo</div>
+              <div class="tier-range">1–2 people</div>
+              <p class="tier-desc">
+                Enjoy a quiet private cabin with high-speed Wi-Fi +
+                connectivity, with reliable price you can count on.
+              </p>
+            </div>
+            <div class="tier-card reveal d1">
+              <div class="tier-icon">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                >
+                  <path
+                    d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <circle cx="9" cy="7" r="4" />
+                  <path
+                    d="M23 21v-2a4 4 0 00-3-3.87"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M16 3.13a4 4 0 010 7.75"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </div>
+              <div class="tier-name">Group</div>
+              <div class="tier-range">3–4 people</div>
+              <p class="tier-desc">
+                Perfect for a small crew heading the same way, one price for
+                all.
+              </p>
+            </div>
+            <div class="tier-card tier-card--xl reveal d2">
+              <div class="tier-badge">Most spacious</div>
+              <div class="tier-icon">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                >
+                  <rect x="1" y="3" width="15" height="13" rx="2" />
+                  <path d="M16 8h4l3 5v3h-7V8z" />
+                  <circle cx="5.5" cy="18.5" r="2.5" />
+                  <circle cx="18.5" cy="18.5" r="2.5" />
+                </svg>
+              </div>
+              <div class="tier-name">XL</div>
+              <div class="tier-range">5–6 people</div>
+              <p class="tier-desc">
+                The full 7-seater, comfortably — still the same fixed fare.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
       <!-- STATS -->
       <section class="stats-pro-section">
         <div class="wrap">
+          <div class="sec-title reveal">
+            <span class="eyebrow">By the numbers</span>
+            <h2>Momentum you can measure</h2>
+            <div class="bar"></div>
+          </div>
           <div class="stats-pro">
             <div class="stat-pro reveal">
               <div class="stat-pro-icon">
@@ -549,10 +799,13 @@
                   <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
                 </svg>
               </div>
-              <div class="stat-pro-num">100+</div>
+              <div class="stat-pro-num" data-count="100">
+                <span class="count-target">0</span>+
+              </div>
               <div class="stat-pro-label">Students Served</div>
               <div class="stat-pro-desc">Growing community of riders</div>
             </div>
+
             <div class="stat-pro reveal d1">
               <div class="stat-pro-icon">
                 <svg viewBox="0 0 24 24">
@@ -575,17 +828,22 @@
                   <circle cx="12" cy="10" r="3" />
                 </svg>
               </div>
-              <div class="stat-pro-num">40+</div>
+              <div class="stat-pro-num" data-count="40">
+                <span class="count-target">0</span>+
+              </div>
               <div class="stat-pro-label">Cape Town Areas</div>
               <div class="stat-pro-desc">Wide metro coverage</div>
             </div>
+
             <div class="stat-pro reveal d3">
               <div class="stat-pro-icon">
                 <svg viewBox="0 0 24 24">
                   <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                 </svg>
               </div>
-              <div class="stat-pro-num">300+</div>
+              <div class="stat-pro-num" data-count="300">
+                <span class="count-target">0</span>+
+              </div>
               <div class="stat-pro-label">Satisfied Travelers</div>
               <div class="stat-pro-desc">
                 Trusted by students &amp; families
@@ -596,50 +854,78 @@
       </section>
 
       <!-- TESTIMONIALS -->
-      <section class="band">
+      <section class="band testimonials-pro" id="reviews">
         <div class="wrap">
           <div class="sec-title reveal">
             <span class="eyebrow">Word on campus</span>
             <h2>Trusted by the students who ride with us</h2>
             <div class="bar"></div>
           </div>
-          <div class="grid g-3">
-            <div class="quote reveal">
-              <div class="stars">★★★★★</div>
-              <p>
-                "Booked an airport run for 6am and they were outside res at
-                5:45. Calm driver, fair price, zero stress."
-              </p>
-              <div class="who">
-                <span class="av">LM</span>
-                <div><b>Lindiwe M.</b><span>UWC · 3rd year</span></div>
-              </div>
-            </div>
-            <div class="quote reveal d1">
-              <div class="stars">★★★★★</div>
-              <p>
-                "We needed the whole society across town. One WhatsApp, sorted.
-                Everyone arrived together and on time."
-              </p>
-              <div class="who">
-                <span class="av">TK</span>
-                <div><b>Thabo K.</b><span>UWC · Society lead</span></div>
-              </div>
-            </div>
-            <div class="quote reveal d2">
-              <div class="stars">★★★★★</div>
-              <p>
-                "As a parent, knowing it's a registered company with trip
-                details shared makes a real difference."
-              </p>
-              <div class="who">
-                <span class="av">AD</span>
-                <div><b>Advocate</b><span>Student · cape town</span></div>
-              </div>
-            </div>
+
+          <!-- Cards are rendered by reviewsMarquee() in main.js (base
+               reviews + anything a visitor has added), then duplicated
+               once so the CSS animation below loops seamlessly. -->
+          <div class="reviews-marquee">
+            <div class="marquee-track" id="reviewsTrack"></div>
+          </div>
+
+          <div class="reviews-actions">
+            <button class="btn btn-primary" id="addReviewBtn">
+              Add your review
+            </button>
           </div>
         </div>
       </section>
+
+      <!-- ADD REVIEW MODAL -->
+      <div class="review-modal-backdrop" id="reviewModalBackdrop"></div>
+      <div
+        class="review-modal"
+        id="reviewModal"
+        role="dialog"
+        aria-label="Add your review"
+      >
+        <button
+          class="review-modal-close"
+          id="reviewModalClose"
+          aria-label="Close"
+        >
+          ✕
+        </button>
+        <h3>Share your experience</h3>
+        <p class="review-modal-sub">
+          This opens WhatsApp with your review pre-filled, and adds it to the
+          scrolling reviews above right away.
+        </p>
+        <div class="field">
+          <label>Your rating</label>
+          <div class="star-picker" id="starPicker">
+            <button type="button" data-star="1">★</button>
+            <button type="button" data-star="2">★</button>
+            <button type="button" data-star="3">★</button>
+            <button type="button" data-star="4">★</button>
+            <button type="button" data-star="5">★</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>Your name</label
+          ><input type="text" id="revName" placeholder="e.g. Lindiwe M." />
+        </div>
+        <div class="field">
+          <label>Campus / role</label
+          ><input type="text" id="revRole" placeholder="e.g. UWC · 3rd year" />
+        </div>
+        <div class="field">
+          <label>Your review</label
+          ><textarea
+            id="revText"
+            placeholder="Tell other students about your trip…"
+          ></textarea>
+        </div>
+        <button class="btn btn-wa btn-block" id="revSubmit">
+          Send review on WhatsApp
+        </button>
+      </div>
 
       <section class="cta">
         <div
@@ -906,5 +1192,13 @@
     </footer>
 
     <script src="js/main.js"></script>
+    <!--
+      animations.js is a separate, presentation-only file: scroll-reveal and
+      micro-interactions layered on top of the markup above. All real content
+      (copy, pricing, services, structured data) lives in this HTML file and
+      main.js, so search engines index the same page whether or not this
+      script runs. Kept separate so animation tweaks never risk booking logic.
+    -->
+    <script src="js/animations.js" defer></script>
   </body>
 </html>
