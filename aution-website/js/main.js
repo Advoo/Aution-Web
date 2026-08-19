@@ -218,6 +218,36 @@ function km(a, b) {
 }
 
 /* ============================================================
+   PRICING — direct port of the Pricing.java model.
+   Same rounding, same rate curve, same discount — just in JS so
+   it can run live in the browser instead of only being quoted
+   over WhatsApp. Fed the same road-distance estimate (km * 1.3)
+   already used everywhere else on the site for consistency.
+   ============================================================ */
+const Pricing = {
+  // round up to the nearest multiple of 5
+  ceilingTo5(value) {
+    return Math.ceil(value / 5) * 5;
+  },
+  // one-way trip price
+  oneWayTrip(distanceKm) {
+    const rate = Math.max(14 - 0.18 * distanceKm, 7.5);
+    const price = distanceKm * rate;
+    return this.ceilingTo5(price);
+  },
+  // return trip price — double the one-way fare, 15% off, rounded up to R5
+  returnTrip(distanceKm) {
+    const oneWay = this.oneWayTrip(distanceKm);
+    const discounted = oneWay * 2 * 0.85;
+    return this.ceilingTo5(discounted);
+  },
+  // R1 234 style grouping, no decimals — fares are always whole R5 steps
+  format(rand) {
+    return "R" + rand.toLocaleString("en-ZA", { maximumFractionDigits: 0 });
+  },
+};
+
+/* ============================================================
    LIVE ADDRESS SEARCH — Photon (free, keyless OpenStreetMap geocoder)
    -------------------------------------------------------------
    Enabled. Same OSM data your map tiles already use, so it's a
@@ -492,28 +522,130 @@ function mountLocationSearch({
     },
   };
 }
-/* ===== Reviews: see more + add-review modal (home page) ===== */
-(function reviews() {
-  const grid = $("#reviewsGrid"),
-    seeMore = $("#seeMoreBtn");
-  seeMore &&
-    grid &&
-    seeMore.addEventListener("click", () => {
-      grid.classList.add("expanded");
-      seeMore.style.display = "none";
-    });
+/* ============================================================
+   REVIEWS — sliding marquee + add-a-review
+   -------------------------------------------------------------
+   Single implementation (this replaces three overlapping/broken
+   versions that had accumulated here: an old static-grid script,
+   an unfinished duplicate-carousel script targeting elements that
+   no longer exist, and a byte-for-byte copy of the old script).
+   Renders review data into #reviewsTrack, then duplicates that
+   content once so a pure-CSS animation (translateX -50%) loops
+   seamlessly regardless of how many reviews exist. A submitted
+   review is added to the same data set and re-rendered, so it
+   joins the loop immediately — and persists via localStorage.
+   ============================================================ */
+(function reviewsMarquee() {
+  const track = $("#reviewsTrack");
+  if (!track) return;
 
+  const STORAGE_KEY = "aution_reviews_v2";
+  const baseReviews = [
+    {
+      name: "Lindiwe M.",
+      role: "UWC · 3rd year",
+      rating: 5,
+      text: "Booked an airport run for 6am and they were outside res at 5:45. Calm driver, fair price, zero stress.",
+      variant: "photo",
+    },
+    {
+      name: "Thabo K.",
+      role: "UWC · Society lead",
+      rating: 5,
+      text: "We needed the whole society across town. One WhatsApp, sorted. Everyone arrived together and on time.",
+      variant: "glass",
+    },
+    {
+      name: "Advocate",
+      role: "Student · Cape Town",
+      rating: 5,
+      text: "As a parent, knowing it's a registered company with trip details shared makes a real difference.",
+      variant: "side",
+    },
+    {
+      name: "Zizipho N.",
+      role: "CPUT · 2nd year",
+      rating: 5,
+      text: "Reliable pickup every Friday for res-to-town. Never had to wait more than a few minutes.",
+      variant: "photo",
+    },
+    {
+      name: "Noah P.",
+      role: "Parent · Durbanville",
+      rating: 5,
+      text: "My daughter's driver messaged us the whole route. That kind of transparency is rare.",
+      variant: "glass",
+    },
+    {
+      name: "Aisha R.",
+      role: "UWC · Postgrad",
+      rating: 5,
+      text: "Booked late at night before an early exam. They still showed up on time. Lifesavers.",
+      variant: "side",
+    },
+  ];
+
+  function loadCustomReviews() {
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+    } catch (e) {
+      return [];
+    }
+  }
+  function saveCustomReviews(list) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+    } catch (e) {}
+  }
+  function initials(name) {
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .filter(Boolean)
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  }
+  function esc(s) {
+    return String(s)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+  }
+  function cardHTML(r, i) {
+    const variant = r.variant || ["photo", "glass", "side"][i % 3];
+    const stars = "★".repeat(r.rating || 5) + "☆".repeat(5 - (r.rating || 5));
+    return `<div class="review-card review-card--${variant}">
+      <div class="rc-media"></div>
+      <div class="rc-content">
+        <div class="stars">${stars}</div>
+        <p>&ldquo;${esc(r.text)}&rdquo;</p>
+        <div class="who">
+          <span class="av">${initials(r.name)}</span>
+          <div><b>${esc(r.name)}</b><span>${esc(r.role)}</span></div>
+        </div>
+      </div>
+    </div>`;
+  }
+  function render() {
+    const all = [...baseReviews, ...loadCustomReviews()];
+    const html = all.map(cardHTML).join("");
+    track.innerHTML = html + html; // exact duplicate → seamless -50% loop
+  }
+  render();
+
+  // ---- Add-a-review modal ----
   const backdrop = $("#reviewModalBackdrop"),
     modal = $("#reviewModal"),
     openBtn = $("#addReviewBtn"),
     closeBtn = $("#reviewModalClose");
   const openModal = () => {
-    backdrop.classList.add("open");
-    modal.classList.add("open");
+    backdrop && backdrop.classList.add("open");
+    modal && modal.classList.add("open");
   };
   const closeModal = () => {
-    backdrop.classList.remove("open");
-    modal.classList.remove("open");
+    backdrop && backdrop.classList.remove("open");
+    modal && modal.classList.remove("open");
   };
   openBtn && openBtn.addEventListener("click", openModal);
   closeBtn && closeBtn.addEventListener("click", closeModal);
@@ -535,19 +667,38 @@ function mountLocationSearch({
 
   $("#revSubmit") &&
     $("#revSubmit").addEventListener("click", () => {
-      const name = $("#revName").value.trim() || "A rider";
-      const role = $("#revRole").value.trim();
-      const text = $("#revText").value.trim();
+      const name = ($("#revName")?.value || "").trim() || "A rider";
+      const role = ($("#revRole")?.value || "").trim() || "AUTION rider";
+      const text = ($("#revText")?.value || "").trim();
       if (!text) {
-        $("#revText").focus();
+        $("#revText")?.focus();
         return;
       }
+
+      const entry = {
+        name,
+        role,
+        rating,
+        text,
+        variant: ["photo", "glass", "side"][Math.floor(Math.random() * 3)],
+      };
+      const custom = loadCustomReviews();
+      custom.unshift(entry);
+      saveCustomReviews(custom);
+      render(); // new review is now part of the same sliding loop
+
       const stars = "★".repeat(rating) + "☆".repeat(5 - rating);
-      const msg = `Hi AUTION! I'd like to leave a review.\n${stars}\nName: ${name}${role ? " (" + role + ")" : ""}\n"${text}"`;
+      const msg = `Hi AUTION! I'd like to leave a review.\n${stars}\nName: ${name} (${role})\n"${text}"`;
       window.open(
         `https://wa.me/27846681513?text=${encodeURIComponent(msg)}`,
         "_blank",
       );
+
+      $("#revName").value = "";
+      $("#revRole").value = "";
+      $("#revText").value = "";
+      rating = 5;
+      paintStars();
       closeModal();
     });
 
@@ -612,6 +763,20 @@ function mountLocationSearch({
       sync();
     });
 
+  // ---- trip type: one-way vs return, affects the fare shown & sent ----
+  let tripType = "oneway";
+  const ttBtns = document.querySelectorAll("#tripType .tt-btn");
+  ttBtns.forEach((b) =>
+    b.addEventListener("click", () => {
+      tripType = b.dataset.type;
+      ttBtns.forEach((x) => {
+        x.classList.toggle("active", x === b);
+        x.setAttribute("aria-selected", x === b ? "true" : "false");
+      });
+      sync();
+    }),
+  );
+
   let map,
     group,
     ready = false;
@@ -670,15 +835,36 @@ function mountLocationSearch({
   function sync() {
     const a = byName(fromEl.value),
       b = byName(toEl.value);
-    const bar = $("#estBar");
+    const bar = $("#estBar"),
+      note = $("#fareNote"),
+      oneWayEl = $("#ttPriceOneway"),
+      returnEl = $("#ttPriceReturn"),
+      returnWasEl = $("#ttPriceReturnWas");
     if (a && b) {
       if (ready) draw(a, b);
       const d = km(a, b) * 1.3,
-        mins = Math.max(8, Math.round((d / 40) * 60));
+        mins = Math.max(8, Math.round((d / 40) * 60)),
+        oneWayFare = Pricing.oneWayTrip(d),
+        returnFare = Pricing.returnTrip(d),
+        returnFullFare = Pricing.ceilingTo5(oneWayFare * 2), // pre-discount reference, for the strikethrough
+        fare = tripType === "return" ? returnFare : oneWayFare;
       $("#estDist").innerHTML = d.toFixed(1) + " <small>km</small>";
       $("#estTime").innerHTML = "~" + mins + " <small>min</small>";
+      $("#estFare").innerHTML =
+        Pricing.format(fare) +
+        (tripType === "return" ? " <small>return</small>" : "");
+      if (oneWayEl) oneWayEl.textContent = Pricing.format(oneWayFare);
+      if (returnEl) returnEl.textContent = Pricing.format(returnFare);
+      if (returnWasEl) returnWasEl.textContent = Pricing.format(returnFullFare);
       bar.style.display = "flex";
-    } else if (bar) bar.style.display = "none";
+      if (note) note.style.display = "block";
+    } else {
+      if (bar) bar.style.display = "none";
+      if (note) note.style.display = "none";
+      if (oneWayEl) oneWayEl.textContent = "—";
+      if (returnEl) returnEl.textContent = "—";
+      if (returnWasEl) returnWasEl.textContent = "—";
+    }
   }
   // prefill from URL (?from=..&to=..) when arriving from the home hero
   const q = new URLSearchParams(location.search);
@@ -706,181 +892,19 @@ function mountLocationSearch({
       let est = "";
       const a = byName(from),
         b = byName(to);
-      if (a && b)
-        est = `\n📍 Est. distance: ~${(km(a, b) * 1.3).toFixed(1)} km`;
+      if (a && b) {
+        const d = km(a, b) * 1.3;
+        const fare =
+          tripType === "return" ? Pricing.returnTrip(d) : Pricing.oneWayTrip(d);
+        const tripLabel = tripType === "return" ? "Return trip" : "One-way";
+        est = `\n📍 Est. distance: ~${d.toFixed(1)} km\n🔁 Trip type: ${tripLabel}\n💰 Est. fare: ${Pricing.format(fare)}`;
+      }
       openWA(
         `🚐 *AUTION TRIP BOOKING*\n\n👤 Name: ${name}\n📞 Contact: ${phone}\n\n🟦 Pickup: ${from}\n🟩 Destination: ${to}${est}\n\n📅 Date: ${date}\n🕒 Time: ${time}\n👥 Passengers: ${pax}` +
           (notes ? `\n📝 Notes: ${notes}` : "") +
           `\n\nPlease confirm availability & fare. Thank you!`,
       );
     });
-})();
-/* ===== Reviews: see more + add-review modal (home page) ===== */
-document.addEventListener("DOMContentLoaded", () => {
-  const track = document.getElementById("reviewsTrack");
-  const modal = document.getElementById("reviewModal");
-  const openBtn = document.getElementById("openReviewModal");
-  const closeBtn = document.getElementById("closeReviewModal");
-  const reviewForm = document.getElementById("addReviewForm");
-
-  // 1. Helper: Create HTML structure for a Review Card
-  function createReviewCard(name, tag, rating, text) {
-    const initials = name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2);
-
-    const card = document.createElement("div");
-    card.className = "review-card";
-    card.innerHTML = `
-      <div class="stars">${rating}</div>
-      <p>"${text}"</p>
-      <div class="reviewer">
-        <span class="avatar">${initials}</span>
-        <div>
-          <strong>${name.toUpperCase()}</strong>
-          <small>${tag}</small>
-        </div>
-      </div>
-    `;
-    return card;
-  }
-
-  // 2. Load custom user reviews stored in localStorage
-  const savedReviews = JSON.parse(
-    localStorage.getItem("aution_reviews") || "[]",
-  );
-  savedReviews.forEach((r) => {
-    const card = createReviewCard(r.name, r.tag, r.rating, r.text);
-    track.appendChild(card);
-  });
-
-  // 3. Duplicate cards to create seamless infinite loop effect
-  function setupInfiniteLoop() {
-    const cards = Array.from(track.children);
-    cards.forEach((card) => {
-      const clone = card.cloneNode(true);
-      track.appendChild(clone);
-    });
-  }
-  setupInfiniteLoop();
-
-  // 4. Modal Open & Close logic
-  openBtn.addEventListener("click", () => modal.classList.add("active"));
-  closeBtn.addEventListener("click", () => modal.classList.remove("active"));
-
-  // 5. Handle Form Submission (Add directly to page without reload)
-  reviewForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-
-    const name = document.getElementById("reviewerName").value;
-    const tag = document.getElementById("reviewerTag").value;
-    const rating = document.getElementById("rating").value;
-    const text = document.getElementById("reviewComment").value;
-
-    // Create & prepend new card to original track segment
-    const newCard = createReviewCard(name, tag, rating, text);
-    const newCloneCard = newCard.cloneNode(true);
-
-    // Insert at front of original list and cloned list
-    track.prepend(newCard);
-    track.appendChild(newCloneCard);
-
-    // Persist to localStorage
-    savedReviews.push({ name, tag, rating, text });
-    localStorage.setItem("aution_reviews", JSON.stringify(savedReviews));
-
-    // Reset and close
-    reviewForm.reset();
-    modal.classList.remove("active");
-  });
-});
-
-(function reviews() {
-  const grid = $("#reviewsGrid"),
-    seeMore = $("#seeMoreBtn");
-  seeMore &&
-    grid &&
-    seeMore.addEventListener("click", () => {
-      grid.classList.add("expanded");
-      seeMore.style.display = "none";
-    });
-
-  const backdrop = $("#reviewModalBackdrop"),
-    modal = $("#reviewModal"),
-    openBtn = $("#addReviewBtn"),
-    closeBtn = $("#reviewModalClose");
-  const openModal = () => {
-    backdrop.classList.add("open");
-    modal.classList.add("open");
-  };
-  const closeModal = () => {
-    backdrop.classList.remove("open");
-    modal.classList.remove("open");
-  };
-  openBtn && openBtn.addEventListener("click", openModal);
-  closeBtn && closeBtn.addEventListener("click", closeModal);
-  backdrop && backdrop.addEventListener("click", closeModal);
-
-  const starBtns = document.querySelectorAll("#starPicker [data-star]");
-  let rating = 5;
-  const paintStars = () =>
-    starBtns.forEach((b) =>
-      b.classList.toggle("on", +b.dataset.star <= rating),
-    );
-  starBtns.forEach((b) =>
-    b.addEventListener("click", () => {
-      rating = +b.dataset.star;
-      paintStars();
-    }),
-  );
-  paintStars();
-
-  $("#revSubmit") &&
-    $("#revSubmit").addEventListener("click", () => {
-      const name = $("#revName").value.trim() || "A rider";
-      const role = $("#revRole").value.trim();
-      const text = $("#revText").value.trim();
-      if (!text) {
-        $("#revText").focus();
-        return;
-      }
-      const stars = "★".repeat(rating) + "☆".repeat(5 - rating);
-      const msg = `Hi AUTION! I'd like to leave a review.\n${stars}\nName: ${name}${role ? " (" + role + ")" : ""}\n"${text}"`;
-      window.open(
-        `https://wa.me/27846681513?text=${encodeURIComponent(msg)}`,
-        "_blank",
-      );
-      closeModal();
-    });
-
-  // gentle count-up for the numeric stats, once scrolled into view
-  const counters = document.querySelectorAll(".stat-pro-num[data-count]");
-  if (counters.length && "IntersectionObserver" in window) {
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (!e.isIntersecting) return;
-          const el = e.target,
-            target = +el.dataset.count,
-            span = el.querySelector(".count-target");
-          let n = 0;
-          const step = Math.max(1, Math.round(target / 40));
-          const tick = () => {
-            n = Math.min(target, n + step);
-            span.textContent = n;
-            if (n < target) requestAnimationFrame(tick);
-          };
-          tick();
-          io.unobserve(el);
-        });
-      },
-      { threshold: 0.5 },
-    );
-    counters.forEach((el) => io.observe(el));
-  }
 })();
 /* ============================================================
    HERO QUICK-BOOK (home page)
@@ -896,6 +920,7 @@ document.addEventListener("DOMContentLoaded", () => {
     suggestBox: $("#pickupSuggest"),
     clearBtn: $('[data-clear="pickup"]'),
     isDestination: false,
+    onChange: () => syncFareHint(),
   });
   const toSearch = mountLocationSearch({
     input: t,
@@ -904,13 +929,29 @@ document.addEventListener("DOMContentLoaded", () => {
     clearBtn: $('[data-clear="destination"]'),
     isDestination: true,
     getOther: () => byName(f.value),
+    onChange: () => syncFareHint(),
   });
+  function syncFareHint() {
+    const hint = $("#qbFareHint");
+    const a = byName(f.value),
+      b = byName(t.value);
+    if (!hint) return;
+    if (a && b) {
+      const d = km(a, b) * 1.3;
+      $("#qbFareDist").innerHTML = d.toFixed(1) + " km";
+      $("#qbFareAmt").textContent = Pricing.format(Pricing.oneWayTrip(d));
+      hint.style.display = "flex";
+    } else {
+      hint.style.display = "none";
+    }
+  }
   $("#qbSwap") &&
     $("#qbSwap").addEventListener("click", () => {
       const a = f.value,
         b = t.value;
       fromSearch.setValue(b);
       toSearch.setValue(a);
+      syncFareHint();
     });
 
   $("#qbGo") &&
@@ -923,8 +964,14 @@ document.addEventListener("DOMContentLoaded", () => {
         toast("Pick where you are and where you’re going.");
         return;
       }
+      const a = byName(from),
+        b = byName(to);
+      const fareLine =
+        a && b
+          ? `\n💰 Est. fare: ${Pricing.format(Pricing.oneWayTrip(km(a, b) * 1.3))} one-way`
+          : "";
       openWA(
-        `🚐 *AUTION — QUICK BOOKING*\n\n👤 Name: ${name || "(not given)"}\n📞 Contact: ${phone || "(not given)"}\n\n🟦 Pickup: ${from}\n🟩 Destination: ${to}\n\nCould you confirm availability & a fare? Thanks!`,
+        `🚐 *AUTION — QUICK BOOKING*\n\n👤 Name: ${name || "(not given)"}\n📞 Contact: ${phone || "(not given)"}\n\n🟦 Pickup: ${from}\n🟩 Destination: ${to}${fareLine}\n\nCould you confirm availability & a fare? Thanks!`,
       );
     });
   // "see full booking + map" jumps to book page with route prefilled

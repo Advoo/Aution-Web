@@ -1417,3 +1417,147 @@ h1,h2,h3,h4,h5{letter-spacing:.02em}
   .marquee-track{animation:none}
   .reviews-marquee{overflow-x:auto}
 }
+
+/* ================================================================
+   LIVE PRICING UI — trip-type selector + fare display
+   -------------------------------------------------------------
+   Covers: the Bolt-style One-way / Return selector and fare card
+   on the full booking page (book.html), the compact fare hint on
+   the home page's quick-book widget, and a refined type treatment
+   for that widget's labels so the whole booking box reads as one
+   deliberate, premium piece rather than a plain form.
+   ================================================================ */
+
+/* ---------- Booking-box typography (home page quick-book) ---------- */
+.hero-card .field label,
+.hero-card .loc-field label{
+  font-size:.7rem;
+  font-weight:700;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--slate);
+}
+.hero-card h3{letter-spacing:.02em}
+.hero-card .hc-sub{font-family:'Inter',sans-serif;letter-spacing:.01em}
+
+/* ---------- Trip-type selector: Bolt-style rows, price on the right ---------- */
+.trip-type{display:flex;flex-direction:column;gap:10px;margin:18px 0}
+.tt-btn{
+  display:flex;align-items:center;gap:14px;width:100%;
+  padding:14px 16px;border-radius:14px;border:1.5px solid var(--line);
+  background:#fff;text-align:left;cursor:pointer;
+  transition:border-color .25s var(--ease-lux,ease),background .25s var(--ease-lux,ease),
+    box-shadow .25s var(--ease-lux,ease),transform .2s var(--ease-lux,ease);
+}
+.tt-btn:hover{border-color:var(--blue);transform:translateY(-1px)}
+.tt-btn.active{
+  border-color:var(--blue);
+  background:linear-gradient(180deg,rgba(5,70,180,.05),rgba(5,70,180,.02));
+  box-shadow:0 10px 26px -16px rgba(5,70,180,.28);
+}
+.tt-icon{
+  width:38px;height:38px;flex:none;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--cloud);color:var(--slate);
+  transition:background .25s var(--ease-lux,ease),color .25s var(--ease-lux,ease);
+}
+.tt-icon svg{width:18px;height:18px}
+.tt-btn.active .tt-icon{background:var(--blue);color:#fff}
+.tt-info{flex:1;min-width:0;display:flex;flex-direction:column}
+.tt-label{font-family:'Inter',sans-serif;font-weight:700;font-size:.92rem;color:var(--ink)}
+.tt-sub{font-size:.76rem;color:var(--slate);margin-top:1px}
+.tt-price{
+  flex:none;font-family:'Playfair Display',Georgia,serif;font-weight:800;
+  font-size:1.15rem;color:var(--navy);letter-spacing:.01em;
+}
+.tt-btn.active .tt-price{color:var(--blue)}
+
+/* ---------- Fare display in the estimate bar ---------- */
+.est-fare{
+  background:linear-gradient(155deg,var(--navy) 0%,var(--navy-2) 100%);
+  position:relative;overflow:hidden;
+}
+.est-fare::after{
+  content:"";position:absolute;top:-40%;right:-20%;width:140px;height:140px;border-radius:50%;
+  background:radial-gradient(circle,rgba(21,214,230,.25),transparent 70%);pointer-events:none;
+}
+.est-fare .v{font-family:'Playfair Display',Georgia,serif;font-size:1.7rem;font-weight:800;letter-spacing:.01em}
+.est-fare .v small{font-family:'Inter',sans-serif}
+
+.fare-note{
+  font-size:.8rem;color:var(--slate);text-align:center;margin:2px 0 16px;
+  padding:10px 14px;background:var(--cloud);border-radius:10px;
+}
+
+/* ---------- Hero quick-book fare hint ---------- */
+.qb-fare-hint{
+  display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;
+  margin:12px 0 4px;padding:12px 16px;border-radius:12px;
+  background:linear-gradient(155deg,var(--navy) 0%,var(--navy-2) 100%);
+  color:#fff;
+}
+.qb-fare-hint #qbFareDist{font-family:'Inter',sans-serif;font-size:.8rem;color:var(--dmute)}
+.qb-fare-hint .dot{color:var(--dmute)}
+.qb-fare-hint #qbFareAmt{
+  font-family:'Playfair Display',Georgia,serif;font-weight:800;font-size:1.25rem;color:#fff;
+}
+.qb-fare-hint small{
+  width:100%;font-family:'Inter',sans-serif;font-size:.7rem;color:var(--dmute);
+  letter-spacing:.02em;margin-top:1px;
+}
+
+@media(max-width:640px){
+  .tt-btn{padding:12px 14px;gap:11px}
+  .tt-icon{width:34px;height:34px}
+  .tt-price{font-size:1.02rem}
+  .est-fare .v{font-size:1.4rem}
+}
+
+/* ================================================================
+   HOME HERO SEARCH — unified "one sheet" feel (InDrive/Bolt-style)
+   -------------------------------------------------------------
+   Scoped to .hero-card only — book.html's fuller form keeps its
+   existing look. The two fields now read as one search sheet with
+   an internal divider, instead of two separately-bordered boxes.
+   ================================================================ */
+.hero-card .loc-group{
+  background:var(--cloud);border:1.5px solid var(--line);border-radius:16px;overflow:visible;
+}
+.hero-card .loc-field{padding:10px 14px;transition:background .2s var(--ease-lux,ease)}
+.hero-card .loc-field--pickup{border-bottom:1px solid var(--line)}
+.hero-card .loc-field:focus-within{background:rgba(5,70,180,.05)}
+.hero-card .loc-input-wrap input{background:transparent!important;border:none!important;box-shadow:none!important}
+.hero-card .loc-input-wrap input:focus{background:transparent!important}
+
+/* ---------- Swipeable perk strip ---------- */
+.perk-strip{
+  display:flex;gap:10px;overflow-x:auto;padding:2px 2px 12px;margin:2px 0 4px;
+  scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;scrollbar-width:none;
+}
+.perk-strip::-webkit-scrollbar{display:none}
+.perk-chip{
+  scroll-snap-align:start;flex:none;width:198px;display:flex;align-items:flex-start;gap:10px;
+  padding:12px 13px;border-radius:14px;background:var(--cloud);border:1px solid var(--line);
+}
+.pc-ico{
+  width:32px;height:32px;flex:none;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(140deg,rgba(5,70,180,.14),rgba(0,198,215,.12));color:var(--blue);
+}
+.pc-ico svg{width:16px;height:16px}
+.perk-chip span{display:flex;flex-direction:column;font-size:.76rem;line-height:1.35;color:var(--slate)}
+.perk-chip b{font-family:'Inter',sans-serif;font-size:.82rem;font-weight:700;color:var(--ink);margin-bottom:2px}
+
+/* ---------- Bolt-style badges + strikethrough on the trip-type rows ---------- */
+.tt-label-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tt-badge{
+  font-size:.6rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
+  padding:2px 8px;border-radius:999px;background:var(--cloud);color:var(--slate);
+}
+.tt-btn.active .tt-badge{background:var(--blue);color:#fff}
+.tt-badge--save{background:rgba(14,94,44,.1);color:var(--wa)}
+.tt-price-col{display:flex;flex-direction:column;align-items:flex-end;flex:none}
+.tt-price-was{font-size:.76rem;color:var(--slate-2);text-decoration:line-through;margin-bottom:1px}
+
+@media(max-width:640px){
+  .perk-chip{width:172px;padding:10px 11px}
+}
