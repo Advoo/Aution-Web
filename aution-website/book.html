@@ -29,9 +29,6 @@
       Defines google.maps.importLibrary() so js/main.js can pull in the
       "maps", "routes", "marker" and "places" libraries on demand.
 
-      👉 ONLY THING TO EDIT: paste your Google Maps API key in the
-         `key:` line below (search for "PASTE YOUR GOOGLE MAPS API KEY HERE").
-
       Google Cloud checklist for that key:
         • Billing account linked to the project
         • APIs enabled: Maps JavaScript API, Routes API, Places API (New)
@@ -78,7 +75,7 @@
           ? console.warn(p + " only loads once. Ignoring:", g)
           : (d[l] = (f, ...n) => r.add(f) && u().then(() => d[l](f, ...n)));
       })({
-        key: "PASTE_YOUR_GOOGLE_MAPS_API_KEY_HERE", // 👈 PASTE YOUR GOOGLE MAPS API KEY HERE (keep the quotes)
+        key: "AIzaSyBVIBeW2y5D06LJCAR0pfVnjYogA3mJFNc", // AIzaSyD0erCAE49aCcMyT1YRs0x7HSX4Tr2pbTQ👈
         v: "weekly",
       });
     </script>
