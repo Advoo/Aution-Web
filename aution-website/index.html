@@ -4,21 +4,21 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
-      AUTION | Your Personal Chauffuer in Cape Town | Reliable Fixed Fares.
-      Always in Motion.
+      AUTION | Your Personal Chauffuer in Cape Town | Upfront Fares. Always in
+      Motion.
     </title>
     <meta
       name="description"
-      content="AUTION (Pty) Ltd — Always in Motion - a registered Cape Town chauffeur service with one fixed fare per ride, whether you're travelling solo or with company. Choose Solo, Group or XL, and enjoy On-Board Wi-Fi, Songs of Choice, and easy return trips on every trip"
+      content="AUTION (Pty) Ltd — Always in Motion - a registered Cape Town chauffeur service with an upfront fare quoted before every ride. Choose Go or XL for your group size, and enjoy On-Board Wi-Fi, Songs of Choice, and easy return trips on every trip"
     />
     <meta name="theme-color" content="#0A1B2E" />
     <meta
       property="og:title"
-      content="AUTION | Your Personal Chauffeur in Cape Town | Fixed Far | Always in Motion"
+      content="AUTION | Your Personal Chauffeur in Cape Town | Upfront Fares | Always in Motion"
     />
     <meta
       property="og:description"
-      content="Safe, reliable, and registered chauffeur service across Cape Town. One fixed fare per trip, whether you're travelling solo or with company. Choose Solo, Group or XL, and enjoy On-Board Wi-Fi, Songs of Choice, and easy return trips on every trip."
+      content="Safe, reliable, and registered chauffeur service across Cape Town. An upfront fare, quoted before every ride. Choose Go or XL for your group size, and enjoy On-Board Wi-Fi, Songs of Choice, and easy return trips on every trip."
     />
     <meta
       property="og:image"
@@ -127,6 +127,59 @@
           ]
         }
       }
+    </script>
+
+    <!--
+      Google Maps JavaScript API — official dynamic-library loader.
+      Added so the home-page "where to?" search can use Google Places
+      (any place, any street). It is lazy: Google's script is only
+      downloaded the first time the search box needs it, so this adds
+      nothing to the page load until then. If it isn't available, the
+      search falls back to the free Photon (OpenStreetMap) search.
+
+      👉 ONLY THING TO EDIT: paste your Google Maps API key in the
+         `key:` line below (search for "PASTE YOUR GOOGLE MAPS API KEY HERE").
+         Use the SAME key as in book.html.
+    -->
+    <script>
+      ((g) => {
+        var h,
+          a,
+          k,
+          p = "The Google Maps JavaScript API",
+          c = "google",
+          l = "importLibrary",
+          q = "__ib__",
+          m = document,
+          b = window;
+        b = b[c] || (b[c] = {});
+        var d = b.maps || (b.maps = {}),
+          r = new Set(),
+          e = new URLSearchParams(),
+          u = () =>
+            h ||
+            (h = new Promise(async (f, n) => {
+              await (a = m.createElement("script"));
+              e.set("libraries", [...r] + "");
+              for (k in g)
+                e.set(
+                  k.replace(/[A-Z]/g, (t) => "_" + t[0].toLowerCase()),
+                  g[k],
+                );
+              e.set("callback", c + ".maps." + q);
+              a.src = `https://maps.${c}apis.com/maps/api/js?` + e;
+              d[q] = f;
+              a.onerror = () => (h = n(Error(p + " could not load.")));
+              a.nonce = m.querySelector("script[nonce]")?.nonce || "";
+              m.head.append(a);
+            }));
+        d[l]
+          ? console.warn(p + " only loads once. Ignoring:", g)
+          : (d[l] = (f, ...n) => r.add(f) && u().then(() => d[l](f, ...n)));
+      })({
+        key: "PASTE_YOUR_GOOGLE_MAPS_API_KEY_HERE", // 👈 PASTE YOUR GOOGLE MAPS API KEY HERE (keep the quotes)
+        v: "weekly",
+      });
     </script>
   </head>
   <body data-page="home">
@@ -266,7 +319,7 @@
             <h1>Always in Motion.</h1>
             <div class="bar"></div>
             <p class="sub">
-              One fixed fare, whether it's just you or the whole car. Tell us
+              An upfront fare before you book, sized to your group. Tell us
               where you're headed and we'll send a driver who's actually
               expecting you.
             </p>
@@ -290,9 +343,108 @@
               >
             </div>
           </div>
-          <div class="hero-card reveal d1">
+          <div class="hero-card reveal d1" id="qbCard" data-step="locations">
             <h3>Get a quick quote</h3>
-            <p class="hc-sub">Pick your route and get confirm on WhatsApp.</p>
+            <p class="hc-sub" id="qbSub">
+              Enter your pickup and drop-off — prices appear instantly.
+            </p>
+
+            <div class="loc-group" id="qbLocGroup">
+              <div class="loc-field loc-field--pickup" id="pickupRow">
+                <label for="pickup">Pickup Location</label>
+                <div class="loc-input-wrap">
+                  <span class="loc-pin" aria-hidden="true"></span>
+                  <input
+                    id="pickup"
+                    type="text"
+                    placeholder="Enter pickup location"
+                    autocomplete="off"
+                  />
+                  <button
+                    type="button"
+                    class="loc-clear"
+                    data-clear="pickup"
+                    aria-label="Clear pickup"
+                  >
+                    ✕
+                  </button>
+                  <div
+                    class="loc-suggest"
+                    id="pickupSuggest"
+                    role="listbox"
+                  ></div>
+                </div>
+              </div>
+              <div class="loc-field loc-field--dest" id="destinationRow">
+                <label for="destination">Destination</label>
+                <div class="loc-input-wrap">
+                  <span class="loc-pin" aria-hidden="true"></span>
+                  <input
+                    id="destination"
+                    type="text"
+                    placeholder="Where to?"
+                    autocomplete="off"
+                  />
+                  <button
+                    type="button"
+                    class="loc-clear"
+                    data-clear="destination"
+                    aria-label="Clear destination"
+                  >
+                    ✕
+                  </button>
+                  <div
+                    class="loc-suggest"
+                    id="destinationSuggest"
+                    role="listbox"
+                  ></div>
+                </div>
+              </div>
+              <button
+                type="button"
+                class="loc-swap"
+                id="qbSwap"
+                aria-label="Swap pickup and destination"
+              >
+                ⇅
+              </button>
+            </div>
+
+            <!-- Compact route summary + edit pencil — shown once both
+                 locations resolve, replacing the two fields above so the
+                 card reads as one clean confirmed line, Uber-style. -->
+            <div class="qb-route-bar" id="qbRouteBar">
+              <button
+                type="button"
+                class="qb-edit-route"
+                id="qbEditRoute"
+                aria-label="Edit pickup and destination"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path
+                    d="M12 20h9"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4L16.5 3.5z"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </button>
+              <div class="qb-route-text">
+                <span id="qbRouteFrom">—</span>
+                <span class="qb-route-sep" aria-hidden="true">→</span>
+                <span id="qbRouteTo">—</span>
+              </div>
+              <span class="qb-route-meta" id="qbRouteMeta">—</span>
+            </div>
 
             <div class="perk-strip" role="region" aria-label="Rider benefits">
               <div class="perk-chip">
@@ -311,7 +463,7 @@
                     /></svg
                 ></span>
                 <span
-                  ><b>Squad Leader</b>Bring 3+ friends, same fixed fare</span
+                  ><b>Squad Leader</b>Bring 3+ friends, one upfront fare</span
                 >
               </div>
               <div class="perk-chip">
@@ -423,93 +575,241 @@
               </div>
             </div>
 
-            <div class="loc-group" id="qbLocGroup">
-              <div class="loc-field loc-field--pickup" id="pickupRow">
-                <label for="pickup">Pickup Location</label>
-                <div class="loc-input-wrap">
-                  <span class="loc-pin" aria-hidden="true"></span>
-                  <input
-                    id="pickup"
-                    type="text"
-                    placeholder="Enter pickup location"
-                    autocomplete="off"
-                  />
-                  <button
-                    type="button"
-                    class="loc-clear"
-                    data-clear="pickup"
-                    aria-label="Clear pickup"
-                  >
-                    ✕
-                  </button>
-                  <div
-                    class="loc-suggest"
-                    id="pickupSuggest"
-                    role="listbox"
-                  ></div>
-                </div>
-              </div>
-              <div class="loc-field loc-field--dest" id="destinationRow">
-                <label for="destination">Destination</label>
-                <div class="loc-input-wrap">
-                  <span class="loc-pin" aria-hidden="true"></span>
-                  <input
-                    id="destination"
-                    type="text"
-                    placeholder="Where to?"
-                    autocomplete="off"
-                  />
-                  <button
-                    type="button"
-                    class="loc-clear"
-                    data-clear="destination"
-                    aria-label="Clear destination"
-                  >
-                    ✕
-                  </button>
-                  <div
-                    class="loc-suggest"
-                    id="destinationSuggest"
-                    role="listbox"
-                  ></div>
-                </div>
-              </div>
-              <button
-                type="button"
-                class="loc-swap"
-                id="qbSwap"
-                aria-label="Swap pickup and destination"
+            <!-- Passenger count drives the Go/XL tier — only shown once a
+                 route resolves, same "prices" step as the trip-type rows. -->
+            <div class="qb-pax-field" id="qbPaxField">
+              <label for="qbPax">Passengers</label>
+              <select id="qbPax">
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+                <option>6</option>
+                <option>7</option>
+              </select>
+              <span class="qb-pax-tier" id="qbPaxTierNote"
+                ><b id="qbPaxTierLabel">Go</b> tier</span
               >
-                ⇅
-              </button>
             </div>
-            <div class="qb-fare-hint" id="qbFareHint" style="display: none">
-              <span id="qbFareDist">—</span>
-              <span class="dot">·</span>
-              <span id="qbFareAmt">—</span>
-              <small>one-way, return discounted</small>
-            </div>
-            <button class="btn btn-wa btn-block btn-lg" id="qbGo">
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <path
-                  d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.945C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 018.413 3.488 11.824 11.824 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 001.51 5.26l-.999 3.648 3.589-.943zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"
-                />
-              </svg>
-              Get a quote on WhatsApp
-            </button>
-            <a
-              href="book.html"
-              id="qbFull"
-              style="
-                display: block;
-                text-align: center;
-                margin-top: 12px;
-                font-size: 0.86rem;
-                color: var(--blue);
-                font-weight: 600;
-              "
-              >See full booking with live map →</a
+
+            <!-- Portrait price rows — same component language as the full
+                 booking page, so the two feel like one product. Pressing a
+                 row selects that trip type AND opens its extra info. -->
+            <div
+              class="trip-type"
+              id="qbTripType"
+              role="tablist"
+              aria-label="Trip type"
             >
+              <div class="tt-item">
+                <button
+                  type="button"
+                  class="tt-btn active"
+                  data-type="one-way"
+                  role="tab"
+                  aria-selected="true"
+                  aria-expanded="false"
+                >
+                  <span class="tt-icon"
+                    ><svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <line
+                        x1="5"
+                        y1="12"
+                        x2="19"
+                        y2="12"
+                        stroke-linecap="round"
+                      />
+                      <polyline
+                        points="12 5 19 12 12 19"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      /></svg
+                  ></span>
+                  <span class="tt-info">
+                    <span class="tt-label-row"
+                      ><span class="tt-label">One-way</span></span
+                    >
+                    <span class="tt-sub">Straight there</span>
+                  </span>
+                  <span class="tt-price-col"
+                    ><span class="tt-price" id="qbPriceOneway">—</span></span
+                  >
+                  <span class="tt-chevron" aria-hidden="true"
+                    ><svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2.4"
+                    >
+                      <polyline
+                        points="6 9 12 15 18 9"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      /></svg
+                  ></span>
+                </button>
+                <div class="tt-more" id="qbMoreOneway">
+                  <ul>
+                    <li><b>Distance</b> <span id="qbOnewayDist">—</span></li>
+                    <li><b>Est. time</b> <span id="qbOnewayTime">—</span></li>
+                    <li id="qbOnewayBandNote" style="display: none">
+                      Short-trip flat rate.
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div class="tt-item">
+                <button
+                  type="button"
+                  class="tt-btn"
+                  data-type="return"
+                  role="tab"
+                  aria-selected="false"
+                  aria-expanded="false"
+                >
+                  <span class="tt-icon"
+                    ><svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <path
+                        d="M17 1l4 4-4 4"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                      <path
+                        d="M3 11V9a4 4 0 014-4h14"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                      <path
+                        d="M7 23l-4-4 4-4"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                      <path
+                        d="M21 13v2a4 4 0 01-4 4H3"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      /></svg
+                  ></span>
+                  <span class="tt-info">
+                    <span class="tt-label-row"
+                      ><span class="tt-label">Return trip</span
+                      ><span class="tt-badge tt-badge--save" id="qbSaveBadge"
+                        >SAVE</span
+                      ></span
+                    >
+                    <span class="tt-sub"
+                      >Recommended — same driver there and back</span
+                    >
+                  </span>
+                  <span class="tt-price-col">
+                    <span class="tt-price-was" id="qbPriceReturnWas">—</span>
+                    <span class="tt-price" id="qbPriceReturn">—</span>
+                  </span>
+                  <span class="tt-chevron" aria-hidden="true"
+                    ><svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2.4"
+                    >
+                      <polyline
+                        points="6 9 12 15 18 9"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      /></svg
+                  ></span>
+                </button>
+                <div class="tt-more" id="qbMoreReturn">
+                  <ul>
+                    <li>Same driver picks you up for the trip back.</li>
+                    <li>
+                      You save <b id="qbReturnSaving">—</b> vs booking two
+                      one-way trips.
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div class="tt-item">
+                <button
+                  type="button"
+                  class="tt-btn"
+                  data-type="collection"
+                  role="tab"
+                  aria-selected="false"
+                  aria-expanded="false"
+                >
+                  <span class="tt-icon"
+                    ><svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <path
+                        d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0118 0z"
+                        stroke-linejoin="round"
+                      />
+                      <circle cx="12" cy="10" r="3" /></svg
+                  ></span>
+                  <span class="tt-info">
+                    <span class="tt-label-row"
+                      ><span class="tt-label">Collection</span></span
+                    >
+                    <span class="tt-sub">We collect you at an agreed time</span>
+                  </span>
+                  <span class="tt-price-col"
+                    ><span class="tt-price" id="qbPriceCollection"
+                      >—</span
+                    ></span
+                  >
+                  <span class="tt-chevron" aria-hidden="true"
+                    ><svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2.4"
+                    >
+                      <polyline
+                        points="6 9 12 15 18 9"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      /></svg
+                  ></span>
+                </button>
+                <div class="tt-more" id="qbMoreCollection">
+                  <ul>
+                    <li>
+                      We collect you and bring you back at the time you set.
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="qb-cta">
+              <button class="btn btn-wa btn-block btn-lg" id="qbGo">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path
+                    d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.945C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 018.413 3.488 11.824 11.824 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 001.51 5.26l-.999 3.648 3.589-.943zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"
+                  />
+                </svg>
+                <span id="qbGoLabel">Get a quote on WhatsApp</span>
+              </button>
+              <a href="book.html" id="qbFull" class="qb-full-link"
+                >See full booking with live map →</a
+              >
+            </div>
           </div>
         </div>
       </section>
@@ -830,14 +1130,14 @@
         <div class="wrap">
           <div class="sec-title reveal">
             <span class="eyebrow">Choose your ride</span>
-            <h2>One fixed fare, three ways to ride</h2>
+            <h2>Two tiers, one upfront fare</h2>
             <div class="bar"></div>
             <p>
-              The fare is set by the trip, not the number of people in the car —
-              so riding solo costs exactly the same as filling every seat.
+              Your group size picks the vehicle — the fare is quoted upfront
+              before you book, every time.
             </p>
           </div>
-          <div class="tiers-grid">
+          <div class="tiers-grid tiers-grid--2">
             <div class="tier-card reveal">
               <div class="tier-icon">
                 <svg
@@ -854,47 +1154,15 @@
                   <circle cx="12" cy="7" r="4" />
                 </svg>
               </div>
-              <div class="tier-name">Solo</div>
-              <div class="tier-range">1–2 people</div>
+              <div class="tier-name">Go</div>
+              <div class="tier-range">1–3 passengers</div>
               <p class="tier-desc">
-                Enjoy a quiet private cabin with high-speed Wi-Fi +
-                connectivity, with reliable price you can count on.
+                A sedan for solo riders and small groups, with a flat short-hop
+                rate on trips under 6km so campus and suburb runs stay cheap and
+                predictable.
               </p>
             </div>
-            <div class="tier-card reveal d1">
-              <div class="tier-icon">
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.8"
-                >
-                  <path
-                    d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                  <circle cx="9" cy="7" r="4" />
-                  <path
-                    d="M23 21v-2a4 4 0 00-3-3.87"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                  <path
-                    d="M16 3.13a4 4 0 010 7.75"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                </svg>
-              </div>
-              <div class="tier-name">Group</div>
-              <div class="tier-range">3–4 people</div>
-              <p class="tier-desc">
-                Perfect for a small crew heading the same way, one price for
-                all.
-              </p>
-            </div>
-            <div class="tier-card tier-card--xl reveal d2">
+            <div class="tier-card tier-card--xl reveal d1">
               <div class="tier-badge">Most spacious</div>
               <div class="tier-icon">
                 <svg
@@ -910,9 +1178,10 @@
                 </svg>
               </div>
               <div class="tier-name">XL</div>
-              <div class="tier-range">5–6 people</div>
+              <div class="tier-range">4–7 passengers</div>
               <p class="tier-desc">
-                The full 7-seater, comfortably — still the same fixed fare.
+                The full 7-seater for bigger groups, events and extra luggage —
+                one upfront fare agreed before you go.
               </p>
             </div>
           </div>
@@ -998,12 +1267,60 @@
             <div class="bar"></div>
           </div>
 
-          <!-- Cards are rendered by reviewsMarquee() in main.js (base
-               reviews + anything a visitor has added), then duplicated
-               once so the CSS animation below loops seamlessly. -->
-          <div class="reviews-marquee">
-            <div class="marquee-track" id="reviewsTrack"></div>
+          <!-- Cards are rendered by reviewsCarousel() in main.js (base
+               reviews + anything a visitor has added). The visitor drags,
+               swipes, or uses the arrows/dots to move through them — no
+               autoplay — and the track loops seamlessly in both
+               directions via cloned end-cards. -->
+          <div class="reviews-carousel-wrap">
+            <button
+              type="button"
+              class="rc-nav rc-nav--prev"
+              id="reviewsPrev"
+              aria-label="Previous review"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+              >
+                <polyline
+                  points="15 18 9 12 15 6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </button>
+            <div class="reviews-carousel" id="reviewsCarousel">
+              <div class="reviews-track" id="reviewsTrack"></div>
+            </div>
+            <button
+              type="button"
+              class="rc-nav rc-nav--next"
+              id="reviewsNext"
+              aria-label="Next review"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+              >
+                <polyline
+                  points="9 18 15 12 9 6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </button>
           </div>
+          <div
+            class="reviews-dots"
+            id="reviewsDots"
+            role="tablist"
+            aria-label="Review slides"
+          ></div>
 
           <div class="reviews-actions">
             <button class="btn btn-primary" id="addReviewBtn">
@@ -1030,8 +1347,8 @@
         </button>
         <h3>Share your experience</h3>
         <p class="review-modal-sub">
-          This opens WhatsApp with your review pre-filled, and adds it to the
-          scrolling reviews above right away.
+          Posted straight to the site the moment you submit — no WhatsApp
+          needed. Sharing a copy there is optional.
         </p>
         <div class="field">
           <label>Your rating</label>
@@ -1058,8 +1375,12 @@
             placeholder="Tell other students about your trip…"
           ></textarea>
         </div>
-        <button class="btn btn-wa btn-block" id="revSubmit">
-          Send review on WhatsApp
+        <label class="review-modal-check">
+          <input type="checkbox" id="revAlsoWA" />
+          Also send a copy on WhatsApp
+        </label>
+        <button class="btn btn-primary btn-block" id="revSubmit">
+          Post your review
         </button>
       </div>
 
@@ -1327,7 +1648,7 @@
       </div>
     </footer>
 
-    <script src="js/main.js"></script>
+    <script type="module" src="js/main.js"></script>
     <!--
       animations.js is a separate, presentation-only file: scroll-reveal and
       micro-interactions layered on top of the markup above. All real content

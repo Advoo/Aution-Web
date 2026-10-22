@@ -192,12 +192,29 @@ const PLACES = [
 ].map((p) => ({ name: p[0], lat: p[1], lng: p[2] }));
 // Runtime store for addresses picked from live search (not in the fixed PLACES list).
 // byName() checks this too, so distance/map/WhatsApp logic works the same either way.
-const dynamicPlaces = [];
+// Persisted in sessionStorage so a place picked on the home page hero still
+// resolves (with coordinates) after the jump to book.html?from=..&to=..
+const dynamicPlaces = (() => {
+  try {
+    return JSON.parse(sessionStorage.getItem("aution_dyn") || "[]");
+  } catch {
+    return [];
+  }
+})();
 const byName = (n) =>
   PLACES.find((p) => p.name === n) || dynamicPlaces.find((p) => p.name === n);
 function rememberDynamicPlace(place) {
   if (!dynamicPlaces.some((p) => p.name === place.name))
-    dynamicPlaces.push(place);
+    // plain-data copy only — Google's _prediction object can't be serialised
+    dynamicPlaces.push({
+      name: place.name,
+      lat: place.lat,
+      lng: place.lng,
+      live: true,
+    });
+  try {
+    sessionStorage.setItem("aution_dyn", JSON.stringify(dynamicPlaces));
+  } catch {}
 }
 function fillSelect(el, first) {
   if (!el) return;
@@ -248,20 +265,21 @@ const Pricing = {
 };
 
 /* ============================================================
-   LIVE ADDRESS SEARCH — Photon (free, keyless OpenStreetMap geocoder)
+   LIVE ADDRESS SEARCH — Google Places (primary) + Photon (fallback)
    -------------------------------------------------------------
-   Enabled. Same OSM data your map tiles already use, so it's a
-   zero-cost, zero-key addition — no Google billing account needed.
+   liveSearch() tries Google Places (New) autocomplete first — any
+   street, suburb, business or landmark. If Google isn't available
+   (key missing/rejected, API blocked, billing or quota problem) it
+   silently falls back to Photon, the free keyless OpenStreetMap
+   geocoder, so the search box never goes dead.
    Biased toward whichever coordinates are passed in (the visitor's
    live location for pickup, or the chosen pickup point for
    destination), so results are relevant to Cape Town, not the
    world at large.
 
-   Scaling note: the public photon.komoot.io endpoint is rate-limited
-   and meant for light/demo traffic. If booking volume grows enough
-   that this becomes a bottleneck, self-host Photon or move to a
-   paid provider (Google Places, Mapbox) — the rest of this code
-   doesn't need to change, just what liveSearchOSM() calls.
+   Fallback note: the public photon.komoot.io endpoint is rate-limited
+   and meant for light/demo traffic — fine as a safety net behind
+   Google, not something to rely on for volume.
    ============================================================ */
 const USE_LIVE_SEARCH = true;
 async function liveSearchOSM(query, bias) {
@@ -286,6 +304,62 @@ async function liveSearchOSM(query, bias) {
     })
     .filter((p) => p.name && Number.isFinite(p.lat) && Number.isFinite(p.lng));
 }
+
+/* ------------------------------------------------------------
+   GOOGLE PLACES (New) autocomplete
+   Needs on the Google Cloud project: billing + "Places API (New)"
+   enabled, and the Places API allowed on your key's API
+   restrictions. The key itself is pasted in book.html / index.html
+   (search for "PASTE YOUR GOOGLE MAPS API KEY HERE").
+
+   Autocomplete returns TEXT ONLY (no coordinates). So suggestions
+   come back with lat/lng = null, and select() below fetches the
+   coordinates for the one place the visitor actually picks.
+   ------------------------------------------------------------ */
+let gToken = null; // one session token per "type → pick" cycle (groups billing)
+
+async function liveSearchGoogle(query, bias) {
+  const { AutocompleteSuggestion, AutocompleteSessionToken } =
+    await google.maps.importLibrary("places");
+  gToken = gToken || new AutocompleteSessionToken();
+  const center = bias || { lat: -33.93, lng: 18.6 }; // Cape Town default
+  const { suggestions } =
+    await AutocompleteSuggestion.fetchAutocompleteSuggestions({
+      input: query,
+      sessionToken: gToken,
+      includedRegionCodes: ["za"], // South Africa only — delete this line to search worldwide
+      locationBias: { center, radius: 50000 }, // a nudge toward Cape Town, not a hard limit
+    });
+  return suggestions
+    .filter((s) => s.placePrediction)
+    .slice(0, 6)
+    .map((s) => ({
+      name: s.placePrediction.text.text,
+      lat: null, // filled in by select() once the visitor picks this one
+      lng: null,
+      live: true,
+      _prediction: s.placePrediction,
+    }));
+}
+
+// Single entry point used by the search box: Google first, Photon as safety net.
+async function liveSearch(query, bias) {
+  if (window.google && google.maps && google.maps.importLibrary) {
+    try {
+      return await liveSearchGoogle(query, bias);
+    } catch (e) {
+      console.warn("Google Places failed — falling back to Photon:", e);
+    }
+  }
+  return liveSearchOSM(query, bias);
+}
+
+// Google calls this global when the key is rejected (bad key, referrer
+// not allowed, billing off). Makes the cause visible in the Console.
+window.gm_authFailure = () =>
+  console.error(
+    "Google Maps auth failed — check: key pasted correctly, HTTP referrer restrictions (incl. localhost), enabled APIs, billing.",
+  );
 
 /* ============================================================
    Reusable Uber-style location search
@@ -346,6 +420,9 @@ function mountLocationSearch({
   function withDistance(list) {
     const other = isDestination ? getOther && getOther() : null;
     return list.map((place) => {
+      // Google suggestions have no coordinates until picked — without this
+      // guard km() would treat null as 0 and show thousands of km.
+      if (place.lat == null) return { place, distKm: null };
       let distKm = null;
       if (isDestination && other)
         distKm = km(other, place) * 1.3; // road-distance estimate, same factor used elsewhere
@@ -373,7 +450,7 @@ function mountLocationSearch({
     debounceTimer = setTimeout(async () => {
       try {
         const bias = isDestination ? getOther && getOther() : userCoords;
-        const results = await liveSearchOSM(query, bias);
+        const results = await liveSearch(query, bias);
         if (seq !== requestSeq) return; // a newer keystroke already superseded this request
         // drop anything that duplicates a service-area name already shown
         liveResults = results.filter(
@@ -456,7 +533,20 @@ function mountLocationSearch({
     if (el) el.scrollIntoView({ block: "nearest" });
   }
 
-  function select(place) {
+  async function select(place) {
+    // Google suggestion: fetch its coordinates now (one details call per pick)
+    if (place.live && place.lat == null && place._prediction) {
+      try {
+        const gp = place._prediction.toPlace();
+        await gp.fetchFields({ fields: ["location"] });
+        place.lat = gp.location.lat();
+        place.lng = gp.location.lng();
+        gToken = null; // session finished — next search gets a fresh token
+      } catch (e) {
+        console.error("Could not fetch place details:", e);
+        return; // don't accept a place we can't locate
+      }
+    }
     if (place.live) rememberDynamicPlace(place); // so byName() can resolve it later
     input.value = place.name;
     rowEl.classList.add("has-value");
@@ -777,94 +867,156 @@ function mountLocationSearch({
     }),
   );
 
+  /* --------------------------------------------------------
+     MAP + ROUTE — Google Maps JavaScript API, Routes library.
+     Route.computeRoutes() returns a real road-network route
+     (distance, duration, and a street-following path) instead
+     of the old Haversine "as the crow flies" estimate, and
+     Google's Map replaces the Leaflet + CARTO tile setup.
+     If the Maps script can't load (bad key, offline, blocked)
+     or a route request fails, this falls back to the previous
+     straight-line x1.3 estimate so booking is never blocked —
+     the fare bar marks that figure "(est.)" when it happens.
+     -------------------------------------------------------- */
   let map,
-    group,
+    mapMarkers = [],
+    mapPolylines = [],
     ready = false;
-  function init() {
-    if (ready || typeof L === "undefined") return;
+  let currentA = null,
+    currentB = null; // last places sync() resolved from the inputs
+  let lastRoute = null; // { km, mins } from the last successful computeRoutes call
+  let lastRouteKey = null; // "lat,lng|lat,lng" — guards stale/duplicate requests
+  let routing = false; // true while a computeRoutes call is in flight
+
+  async function init() {
+    if (ready || typeof google === "undefined" || !google.maps) return;
     try {
-      map = L.map(mapEl, { scrollWheelZoom: false }).setView(
-        [-33.95, 18.55],
-        10,
-      );
-      L.tileLayer(
-        "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
-        {
-          attribution: "&copy; OpenStreetMap &copy; CARTO",
-          maxZoom: 19,
-          subdomains: "abcd",
-        },
-      ).addTo(map);
-      group = L.layerGroup().addTo(map);
+      const { Map } = await google.maps.importLibrary("maps");
+      map = new Map(mapEl, {
+        center: { lat: -33.95, lng: 18.55 },
+        zoom: 10,
+        mapId: "DEMO_MAP_ID", // required for AdvancedMarkerElement; swap for your own Map ID any time
+        scrollwheel: false,
+        streetViewControl: false,
+        mapTypeControl: false,
+        fullscreenControl: false,
+      });
       ready = true;
       sync();
     } catch (e) {
+      console.error("Maps init failed:", e); // ← the real reason (key / referrer / API / billing)
       mapEl.innerHTML =
         '<div style="display:grid;place-items:center;height:100%;color:#5C6F86;text-align:center;padding:20px;font-size:.9rem">Map preview unavailable here — routing still works, just send your booking.</div>';
     }
   }
-  function draw(a, b) {
-    if (!ready) return;
-    group.clearLayers();
-    const dot = (p, c, lab) =>
-      L.marker([p.lat, p.lng], {
-        icon: L.divIcon({
-          className: "",
-          html: `<div style="width:18px;height:18px;border-radius:50%;background:${c};border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.4)"></div>`,
-          iconSize: [18, 18],
-          iconAnchor: [9, 9],
-        }),
-      }).bindTooltip(lab, { direction: "top" });
-    dot(a, "#1E5BFF", "Pickup: " + a.name).addTo(group);
-    dot(b, "#15D6E6", "Drop-off: " + b.name).addTo(group);
-    const line = L.polyline(
-      [
-        [a.lat, a.lng],
-        [b.lat, b.lng],
-      ],
-      {
-        color: "#1E5BFF",
-        weight: 4,
-        opacity: 0.9,
-        dashArray: "1 9",
-        lineCap: "round",
-      },
-    ).addTo(group);
-    map.fitBounds(line.getBounds().pad(0.35));
+
+  function clearMap() {
+    if (!map) return;
+    mapMarkers.forEach((m) => (m.map = null));
+    mapMarkers = [];
+    mapPolylines.forEach((p) => p.setMap(null));
+    mapPolylines = [];
   }
-  function sync() {
-    const a = byName(fromEl.value),
-      b = byName(toEl.value);
+
+  async function drawRoute(a, b) {
+    if (!ready) return;
+    const key = `${a.lat},${a.lng}|${b.lat},${b.lng}`;
+    if (key === lastRouteKey && lastRoute) return; // already have exactly this route
+    lastRouteKey = key;
+    routing = true;
+    renderFare();
+    try {
+      const { Route } = await google.maps.importLibrary("routes");
+      const { routes } = await Route.computeRoutes({
+        origin: { lat: a.lat, lng: a.lng },
+        destination: { lat: b.lat, lng: b.lng },
+        travelMode: "DRIVING",
+        fields: ["path", "distanceMeters", "durationMillis"],
+      });
+      if (key !== lastRouteKey) return; // a newer request already superseded this one
+      if (!routes || !routes.length) throw new Error("No route returned");
+      const route = routes[0];
+
+      clearMap();
+      mapPolylines = route.createPolylines();
+      mapPolylines.forEach((p) => p.setMap(map));
+      await google.maps.importLibrary("marker"); // Google's own route-marker example loads this too
+      mapMarkers = await route.createWaypointAdvancedMarkers();
+      mapMarkers.forEach((m) => (m.map = map));
+
+      const { LatLngBounds } = await google.maps.importLibrary("core");
+      const bounds = new LatLngBounds();
+      route.path.forEach((p) => bounds.extend(p));
+      map.fitBounds(bounds, 60);
+
+      lastRoute = {
+        km: route.distanceMeters / 1000,
+        mins: Math.max(1, Math.round(route.durationMillis / 60000)),
+      };
+    } catch (e) {
+      console.error("computeRoutes failed:", e); // ← the real reason (Routes API / key restriction / billing)
+      if (key !== lastRouteKey) return;
+      lastRoute = null; // fall back to the Haversine estimate in renderFare()
+    } finally {
+      if (key === lastRouteKey) {
+        routing = false;
+        renderFare();
+      }
+    }
+  }
+
+  // Renders the est-bar from whichever figure is currently best: a real
+  // road route if we have one, the old straight-line estimate if not yet
+  // (or if the route request failed), or "…" while one is in flight.
+  function renderFare() {
     const bar = $("#estBar"),
-      note = $("#fareNote"),
-      oneWayEl = $("#ttPriceOneway"),
-      returnEl = $("#ttPriceReturn"),
-      returnWasEl = $("#ttPriceReturnWas");
-    if (a && b) {
-      if (ready) draw(a, b);
-      const d = km(a, b) * 1.3,
-        mins = Math.max(8, Math.round((d / 40) * 60)),
-        oneWayFare = Pricing.oneWayTrip(d),
-        returnFare = Pricing.returnTrip(d),
-        returnFullFare = Pricing.ceilingTo5(oneWayFare * 2), // pre-discount reference, for the strikethrough
-        fare = tripType === "return" ? returnFare : oneWayFare;
-      $("#estDist").innerHTML = d.toFixed(1) + " <small>km</small>";
+      note = $("#fareNote");
+    if (!currentA || !currentB) {
+      if (bar) bar.style.display = "none";
+      if (note) note.style.display = "none";
+      return;
+    }
+    let d, mins, isEstimate;
+    if (lastRoute) {
+      d = lastRoute.km;
+      mins = lastRoute.mins;
+      isEstimate = false;
+    } else {
+      d = km(currentA, currentB) * 1.3;
+      mins = Math.max(8, Math.round((d / 40) * 60));
+      isEstimate = true;
+    }
+    const fare =
+      tripType === "return" ? Pricing.returnTrip(d) : Pricing.oneWayTrip(d);
+    if (routing) {
+      $("#estDist").innerHTML = "…";
+      $("#estTime").innerHTML = "…";
+      $("#estFare").innerHTML = "…";
+    } else {
+      $("#estDist").innerHTML =
+        d.toFixed(1) +
+        " <small>km</small>" +
+        (isEstimate ? " <small>(est.)</small>" : "");
       $("#estTime").innerHTML = "~" + mins + " <small>min</small>";
       $("#estFare").innerHTML =
         Pricing.format(fare) +
         (tripType === "return" ? " <small>return</small>" : "");
-      if (oneWayEl) oneWayEl.textContent = Pricing.format(oneWayFare);
-      if (returnEl) returnEl.textContent = Pricing.format(returnFare);
-      if (returnWasEl) returnWasEl.textContent = Pricing.format(returnFullFare);
-      bar.style.display = "flex";
-      if (note) note.style.display = "block";
-    } else {
-      if (bar) bar.style.display = "none";
-      if (note) note.style.display = "none";
-      if (oneWayEl) oneWayEl.textContent = "—";
-      if (returnEl) returnEl.textContent = "—";
-      if (returnWasEl) returnWasEl.textContent = "—";
     }
+    bar.style.display = "flex";
+    if (note) note.style.display = "block";
+  }
+
+  function sync() {
+    currentA = byName(fromEl.value);
+    currentB = byName(toEl.value);
+    if (currentA && currentB) {
+      if (ready) drawRoute(currentA, currentB);
+    } else {
+      lastRoute = null;
+      lastRouteKey = null;
+      clearMap();
+    }
+    renderFare();
   }
   // prefill from URL (?from=..&to=..) when arriving from the home hero
   const q = new URLSearchParams(location.search);
@@ -893,11 +1045,12 @@ function mountLocationSearch({
       const a = byName(from),
         b = byName(to);
       if (a && b) {
-        const d = km(a, b) * 1.3;
+        const d = lastRoute ? lastRoute.km : km(a, b) * 1.3;
         const fare =
           tripType === "return" ? Pricing.returnTrip(d) : Pricing.oneWayTrip(d);
         const tripLabel = tripType === "return" ? "Return trip" : "One-way";
-        est = `\n📍 Est. distance: ~${d.toFixed(1)} km\n🔁 Trip type: ${tripLabel}\n💰 Est. fare: ${Pricing.format(fare)}`;
+        const distLabel = lastRoute ? "Distance" : "Est. distance (approx.)";
+        est = `\n📍 ${distLabel}: ~${d.toFixed(1)} km\n🔁 Trip type: ${tripLabel}\n💰 Est. fare: ${Pricing.format(fare)}`;
       }
       openWA(
         `🚐 *AUTION TRIP BOOKING*\n\n👤 Name: ${name}\n📞 Contact: ${phone}\n\n🟦 Pickup: ${from}\n🟩 Destination: ${to}${est}\n\n📅 Date: ${date}\n🕒 Time: ${time}\n👥 Passengers: ${pax}` +

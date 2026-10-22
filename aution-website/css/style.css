@@ -154,34 +154,31 @@ h1,h2,h3,h4,h5{font-family:'Cregan','Playfair Display',Georgia,serif;line-height
 .hero p.sub{font-size:clamp(1rem,1.5vw,1.15rem);color:#E1ECFF;max-width:46ch;text-transform:none;letter-spacing:0;font-weight:400;font-family:'Inter',sans-serif}
 .hero-cta{display:flex;flex-wrap:wrap;gap:14px;margin-top:2rem}
 
-/* glass booking bar — landscape */
+/* compact booking card — portrait, Uber-style single column.
+   Default state shows just the two location fields; once both resolve
+   to a known place, #qbCard flips to [data-step="prices"] (see the
+   LIVE PRICING UI section below) which swaps the fields for a slim
+   route summary and reveals the portrait price rows. */
 .hero-card{
   background:rgba(255,255,255,.97);
-  border-radius:14px;
-  padding:22px 28px 20px;
+  border-radius:16px;
+  padding:20px 22px 22px;
   box-shadow:0 32px 80px -20px rgba(0,0,0,.55),0 4px 16px -4px rgba(0,0,0,.25);
   color:var(--ink);
   border-top:3px solid var(--blue);
   backdrop-filter:blur(10px);
-  display:grid;
-  grid-template-columns:1fr 1fr 1fr 1fr auto;
-  column-gap:18px;
-  row-gap:0;
-  align-items:end;
+  display:flex;
+  flex-direction:column;
+  width:min(94vw,420px);
   margin-inline:clamp(0px,3vw,56px);
 }
-.hero-card>h3{grid-column:1/-1;font-size:1.05rem;margin-bottom:.2rem;letter-spacing:.04em}
-.hero-card>.hc-sub{grid-column:1/-1;font-size:.78rem;color:var(--slate);margin-bottom:14px;
+.hero-card>h3{font-size:1.05rem;margin-bottom:.2rem;letter-spacing:.04em}
+.hero-card>.hc-sub{font-size:.78rem;color:var(--slate);margin-bottom:14px;
   text-transform:none;letter-spacing:0;font-family:'Inter',sans-serif;font-weight:400}
-.hero-card>.field{margin-bottom:0}
 .hero-card .field label{font-size:.76rem;margin-bottom:5px;font-weight:600;display:block;color:var(--ink)}
 .hero-card .field input,.hero-card .field select{padding:.7rem .9rem;font-size:.88rem;width:100%}
-.hero-card>.field-row{grid-column:3/5;display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:0}
-.hero-card>.field-row>.field{margin-bottom:0}
-.hero-card>.loc-group{grid-column:3/5;margin-bottom:0}
-.hero-card>.loc-group .loc-field{margin-bottom:0}
-.hero-card>#qbGo{grid-column:5;align-self:end;white-space:nowrap;padding:.72rem 1.3rem;font-size:.86rem}
-.hero-card>#qbFull{grid-column:1/-1;text-align:center;margin-top:10px;font-size:.8rem;color:var(--blue)}
+.hero-card>#qbGo{white-space:nowrap}
+.hero-card>#qbFull{text-align:center;margin-top:10px;font-size:.8rem;color:var(--blue)}
 
 /* page banner (inner pages) */
 .banner{position:relative;color:#fff;overflow:hidden;background:#0a0a0a}
@@ -253,6 +250,17 @@ h1,h2,h3,h4,h5{font-family:'Cregan','Playfair Display',Georgia,serif;line-height
 /* ===== vision cards ===== */
 /* ===== Ride tiers (Solo / Group / XL) ===== */
 .tiers-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:8px}
+.tiers-grid--2{grid-template-columns:repeat(2,1fr);max-width:720px;margin-left:auto;margin-right:auto}
+
+/* ===== Rate card (services.html) — populated from pricing.js fareTable() ===== */
+.rate-card-wrap{overflow-x:auto;border:1.5px solid var(--line);border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.05)}
+.rate-card-table{width:100%;border-collapse:collapse;min-width:640px;font-family:'Inter',sans-serif;font-size:.88rem}
+.rate-card-table th,.rate-card-table td{padding:12px 14px;text-align:center;border-bottom:1px solid var(--line)}
+.rate-card-table thead tr:first-child th{background:var(--navy);color:#fff;font-weight:700}
+.rate-card-table thead tr:last-child th{background:var(--cloud);color:var(--slate);font-weight:600;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em}
+.rate-card-table td:first-child,.rate-card-table th:first-child{text-align:left;font-weight:700;color:var(--ink)}
+.rate-card-table tbody tr:last-child td{border-bottom:none}
+.rate-card-table tbody tr:hover{background:var(--cloud)}
 .tier-card{position:relative;background:#fff;border:1.5px solid var(--line);border-radius:14px;
   padding:34px 26px;text-align:center;transition:transform .3s var(--ease),box-shadow .3s var(--ease),border-color .3s}
 .tier-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-lg);border-color:var(--blue)}
@@ -357,6 +365,11 @@ h1,h2,h3,h4,h5{font-family:'Cregan','Playfair Display',Georgia,serif;line-height
 .star-picker{display:flex;gap:6px;font-size:1.6rem}
 .star-picker button{border:none;background:none;color:var(--line);cursor:pointer;line-height:1;padding:0;transition:color .15s}
 .star-picker button.on{color:#e8b93f}
+.review-modal-check{
+  display:flex;align-items:center;gap:9px;margin:4px 0 18px;
+  font-size:.84rem;color:var(--slate);cursor:pointer;
+}
+.review-modal-check input{width:16px;height:16px;accent-color:var(--wa);cursor:pointer}
 
 /* ===== split feature ===== */
 .split{display:grid;grid-template-columns:1fr 1fr;gap:clamp(32px,5vw,60px);align-items:center}
@@ -590,10 +603,7 @@ h1,h2,h3,h4,h5{font-family:'Cregan','Playfair Display',Georgia,serif;line-height
   .stats{grid-template-columns:repeat(2,1fr);gap:30px 20px}
   .split,.book-layout,.contact-grid{grid-template-columns:1fr;gap:32px}
   .hero .wrap{padding-block:clamp(56px,9vw,90px) clamp(36px,5vw,56px)}
-  .hero-card{grid-template-columns:1fr 1fr;margin-inline:0}
-  .hero-card>.field-row{grid-column:1/-1;grid-template-columns:1fr 1fr}
-  .hero-card>.loc-group{grid-column:1/-1}
-  .hero-card>#qbGo{grid-column:1/-1}
+  .hero-card{width:100%;margin-inline:0}
   .book-layout #map{height:380px;order:-1}
   .strip .wrap{grid-template-columns:repeat(2,1fr)}
   .foot-top{grid-template-columns:1fr 1fr;gap:32px}
@@ -607,10 +617,6 @@ h1,h2,h3,h4,h5{font-family:'Cregan','Playfair Display',Georgia,serif;line-height
   .topbar .grp.left{display:none}
   .hero-cta .btn,.cta-actions .btn{flex:1;min-width:140px}
   .hero h1{white-space:normal;font-size:clamp(3rem,11vw,4.6rem);margin-bottom:1.2rem}
-  .hero-card{grid-template-columns:1fr}
-  .hero-card>.field-row{grid-column:1;grid-template-columns:1fr}
-  .hero-card>.loc-group{grid-column:1}
-  .hero-card>#qbGo{grid-column:1}
   .welcome-layout{grid-template-columns:1fr;gap:36px}
   .welcome-text{text-align:center}
   .welcome-actions{justify-content:center}
@@ -994,18 +1000,13 @@ p b,p strong,li b,li strong{font-family:'Inter',sans-serif;font-weight:700;text-
   .hero h1{white-space:normal;font-size:clamp(2.8rem,9vw,4.2rem)}
   .hero-cta{flex-direction:column;gap:10px;align-items:stretch}
   .hero-cta .btn{width:100%;justify-content:center;flex:unset;min-width:unset}
-  /* Hero booking card — single column */
+  /* Hero booking card — tighter padding on small screens */
   .hero-card{
-    grid-template-columns:1fr;
     padding:18px 16px;
     border-radius:12px;
     margin-inline:0;
-    row-gap:2px;
+    width:100%;
   }
-  .hero-card>.field-row{grid-column:auto;grid-template-columns:1fr}
-  .hero-card>.loc-group{grid-column:auto}
-  .hero-card>#qbGo{grid-column:auto;width:100%}
-  .hero-card>#qbFull{grid-column:auto}
 
   /* ── Service icon strip ── */
   .strip .wrap{grid-template-columns:1fr}
@@ -1323,23 +1324,47 @@ h1,h2,h3,h4,h5{letter-spacing:.02em}
 /* ================================================================
    REVIEWS — sliding marquee (rebuilt from scratch)
    -------------------------------------------------------------
-   Cards are generated by reviewsMarquee() in main.js and duplicated
-   once, so translateX(-50%) loops seamlessly no matter how many
-   reviews exist. Three visual variants cycle for contrast: a full
-   photo-style backdrop, a frosted-glass panel over a blurred photo,
-   and a lighter card with a small photo "chip" to one side — all
-   using warm charcoal-grey gradients (car-interior tone) as a
-   placeholder in place of real photography. Swap in real photos by
-   setting a background-image on .rc-media per card when ready.
+   Cards are generated by reviewsCarousel() in main.js, wrapped with
+   a cloned last-card/first-card at each end so the track can loop
+   seamlessly in both directions. The visitor drives it — drag,
+   swipe, the arrow buttons, or the dots below — nothing auto-plays.
+   Three visual variants cycle for contrast: a full photo-style
+   backdrop, a frosted-glass panel over a blurred photo, and a
+   lighter card with a small photo "chip" to one side — all using
+   warm charcoal-grey gradients (car-interior tone) as a placeholder
+   in place of real photography. Swap in real photos by setting a
+   background-image on .rc-media per card when ready.
    ================================================================ */
-.reviews-marquee{
-  position:relative;overflow:hidden;margin-top:8px;padding:8px 0 28px;
-  -webkit-mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent);
-  mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent);
+.reviews-carousel-wrap{display:flex;align-items:center;gap:10px;margin-top:8px}
+.reviews-carousel{
+  position:relative; /* offsetParent for .reviews-track's children, so their
+    offsetLeft is measured from the scroll viewport itself, not the page */
+  flex:1;min-width:0;overflow-x:auto;overflow-y:hidden;
+  scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
+  scrollbar-width:none;cursor:grab;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 3%,#000 97%,transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 3%,#000 97%,transparent);
 }
-.marquee-track{display:flex;gap:22px;width:max-content;animation:auReviewScroll 48s linear infinite}
-.reviews-marquee:hover .marquee-track{animation-play-state:paused}
-@keyframes auReviewScroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.reviews-carousel::-webkit-scrollbar{display:none}
+.reviews-carousel.dragging{cursor:grabbing;scroll-snap-type:none}
+.reviews-track{display:flex;gap:22px;width:max-content;padding:8px 4px 28px}
+.reviews-track>*{scroll-snap-align:start}
+
+.rc-nav{
+  flex:none;width:44px;height:44px;border-radius:50%;border:1.5px solid var(--line);
+  background:#fff;color:var(--ink);display:flex;align-items:center;justify-content:center;
+  cursor:pointer;box-shadow:var(--shadow);
+  transition:border-color .25s ease,color .25s ease,transform .2s ease,box-shadow .25s ease;
+}
+.rc-nav:hover{border-color:var(--blue);color:var(--blue);transform:translateY(-2px)}
+.rc-nav svg{width:18px;height:18px}
+
+.reviews-dots{display:flex;justify-content:center;align-items:center;gap:8px;margin:2px 0 30px}
+.reviews-dots button{
+  width:8px;height:8px;border-radius:999px;border:none;background:var(--line);
+  padding:0;cursor:pointer;transition:background .25s ease,width .25s ease;
+}
+.reviews-dots button.active{background:var(--blue);width:24px}
 
 .review-card{
   position:relative;flex:none;width:340px;min-height:280px;border-radius:20px;
@@ -1412,10 +1437,8 @@ h1,h2,h3,h4,h5{letter-spacing:.02em}
   .review-card{width:280px;min-height:260px}
   .review-card--side .rc-content{padding:24px 20px 24px 20px}
   .review-card--side .rc-media{position:absolute;top:16px;right:16px;width:48px;height:48px}
-}
-@media(prefers-reduced-motion:reduce){
-  .marquee-track{animation:none}
-  .reviews-marquee{overflow-x:auto}
+  .rc-nav{width:36px;height:36px}
+  .rc-nav svg{width:15px;height:15px}
 }
 
 /* ================================================================
@@ -1458,11 +1481,11 @@ h1,h2,h3,h4,h5{letter-spacing:.02em}
 .tt-icon{
   width:38px;height:38px;flex:none;border-radius:50%;
   display:flex;align-items:center;justify-content:center;
-  background:var(--cloud);color:var(--slate);
-  transition:background .25s var(--ease-lux,ease),color .25s var(--ease-lux,ease);
+  background:linear-gradient(140deg,rgba(5,70,180,.14),rgba(0,198,215,.12));color:var(--blue);
+  transition:background .25s var(--ease-lux,ease),color .25s var(--ease-lux,ease),box-shadow .25s var(--ease-lux,ease);
 }
 .tt-icon svg{width:18px;height:18px}
-.tt-btn.active .tt-icon{background:var(--blue);color:#fff}
+.tt-btn.active .tt-icon{background:var(--blue);color:#fff;box-shadow:0 6px 16px -6px rgba(5,70,180,.55)}
 .tt-info{flex:1;min-width:0;display:flex;flex-direction:column}
 .tt-label{font-family:'Inter',sans-serif;font-weight:700;font-size:.92rem;color:var(--ink)}
 .tt-sub{font-size:.76rem;color:var(--slate);margin-top:1px}
@@ -1471,6 +1494,25 @@ h1,h2,h3,h4,h5{letter-spacing:.02em}
   font-size:1.15rem;color:var(--navy);letter-spacing:.01em;
 }
 .tt-btn.active .tt-price{color:var(--blue)}
+
+/* ---------- Row-level "extra info" — press a row to select it AND
+   reveal its details panel underneath, instead of a separate control ---------- */
+.tt-item{border-radius:14px}
+.tt-chevron{
+  flex:none;width:16px;height:16px;color:var(--slate-2);
+  transition:transform .3s var(--ease-lux,ease),color .25s ease;
+}
+.tt-btn.active .tt-chevron{color:var(--blue)}
+.tt-item.expanded .tt-chevron{transform:rotate(180deg)}
+.tt-more{
+  max-height:0;opacity:0;overflow:hidden;
+  padding:0 16px 0 68px;
+  font-size:.78rem;color:var(--slate);line-height:1.55;
+  transition:max-height .35s var(--ease-lux,ease),opacity .3s ease,padding .35s var(--ease-lux,ease);
+}
+.tt-item.expanded .tt-more{max-height:130px;opacity:1;padding:10px 16px 14px 68px}
+.tt-more ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
+.tt-more b{color:var(--ink);font-weight:700}
 
 /* ---------- Fare display in the estimate bar ---------- */
 .est-fare{
@@ -1489,28 +1531,71 @@ h1,h2,h3,h4,h5{letter-spacing:.02em}
   padding:10px 14px;background:var(--cloud);border-radius:10px;
 }
 
-/* ---------- Hero quick-book fare hint ---------- */
-.qb-fare-hint{
-  display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;
-  margin:12px 0 4px;padding:12px 16px;border-radius:12px;
-  background:linear-gradient(155deg,var(--navy) 0%,var(--navy-2) 100%);
-  color:#fff;
+/* ---------- Hero quick-book: staged reveal ----------
+   #qbCard starts at data-step="locations" (just the two fields —
+   small, Uber-style). Once both resolve to a known place, main.js
+   flips it to data-step="prices": the fields collapse into
+   .qb-route-bar, the perk chips step aside, and .trip-type appears
+   with live one-way / return prices. */
+#qbCard .qb-route-bar,
+#qbCard .trip-type,
+#qbCard .qb-pax-field{display:none}
+#qbCard[data-step="prices"] #qbLocGroup{display:none}
+#qbCard[data-step="prices"] .qb-route-bar{display:flex}
+#qbCard[data-step="prices"] .trip-type{display:flex}
+#qbCard[data-step="prices"] .qb-pax-field{display:flex}
+#qbCard[data-step="prices"] .perk-strip{display:none}
+#qbCard[data-step="prices"] .hc-sub{display:none}
+
+.qb-pax-field{
+  align-items:center;gap:10px;margin:0 0 14px;padding:10px 14px;
+  border-radius:14px;background:var(--cloud);border:1px solid var(--line);
 }
-.qb-fare-hint #qbFareDist{font-family:'Inter',sans-serif;font-size:.8rem;color:var(--dmute)}
-.qb-fare-hint .dot{color:var(--dmute)}
-.qb-fare-hint #qbFareAmt{
-  font-family:'Playfair Display',Georgia,serif;font-weight:800;font-size:1.25rem;color:#fff;
+.qb-pax-field label{font-size:.82rem;font-weight:600;color:var(--ink);flex:none}
+.qb-pax-field select{
+  font-family:'Inter',sans-serif;font-size:.9rem;color:var(--ink);
+  border:1.5px solid var(--line);border-radius:8px;padding:5px 8px;background:#fff;flex:none;
 }
-.qb-fare-hint small{
-  width:100%;font-family:'Inter',sans-serif;font-size:.7rem;color:var(--dmute);
-  letter-spacing:.02em;margin-top:1px;
+.qb-pax-tier{margin-left:auto;font-size:.8rem;color:var(--slate);white-space:nowrap}
+.qb-pax-tier b{color:var(--blue)}
+
+.pax-tier-note{margin:8px 0 0;font-size:.82rem;color:var(--slate)}
+.pax-tier-note b{color:var(--blue)}
+
+.qb-route-bar{
+  align-items:center;gap:12px;margin:6px 0 14px;padding:12px 14px;
+  border-radius:14px;background:var(--cloud);border:1px solid var(--line);
+}
+.qb-edit-route{
+  flex:none;width:34px;height:34px;border-radius:50%;border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  background:#fff;color:var(--blue);box-shadow:0 4px 12px -6px rgba(5,70,180,.35);
+  transition:transform .2s ease,box-shadow .2s ease;
+}
+.qb-edit-route:hover{transform:translateY(-1px);box-shadow:0 8px 18px -6px rgba(5,70,180,.45)}
+.qb-edit-route svg{width:15px;height:15px}
+.qb-route-text{
+  flex:1;min-width:0;font-family:'Inter',sans-serif;font-weight:700;font-size:.86rem;
+  color:var(--ink);display:flex;align-items:center;gap:8px;overflow:hidden;
+}
+.qb-route-text span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.qb-route-sep{flex:none;color:var(--blue);font-weight:400}
+.qb-route-meta{flex:none;font-size:.72rem;color:var(--slate);white-space:nowrap}
+
+.qb-cta{margin-top:4px}
+.qb-full-link{
+  display:block;text-align:center;margin-top:12px;
+  font-size:.86rem;color:var(--blue);font-weight:600;
 }
 
 @media(max-width:640px){
   .tt-btn{padding:12px 14px;gap:11px}
   .tt-icon{width:34px;height:34px}
   .tt-price{font-size:1.02rem}
+  .tt-more{padding-left:60px}
+  .tt-item.expanded .tt-more{padding-left:60px}
   .est-fare .v{font-size:1.4rem}
+  .qb-route-meta{display:none}
 }
 
 /* ================================================================
@@ -1522,6 +1607,7 @@ h1,h2,h3,h4,h5{letter-spacing:.02em}
    ================================================================ */
 .hero-card .loc-group{
   background:var(--cloud);border:1.5px solid var(--line);border-radius:16px;overflow:visible;
+  margin-bottom:14px;
 }
 .hero-card .loc-field{padding:10px 14px;transition:background .2s var(--ease-lux,ease)}
 .hero-card .loc-field--pickup{border-bottom:1px solid var(--line)}

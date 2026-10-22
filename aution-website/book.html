@@ -23,11 +23,65 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700&display=swap"
       rel="stylesheet"
     />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css"
-    />
     <link rel="stylesheet" href="css/style.css" />
+    <!--
+      Google Maps JavaScript API — official dynamic-library loader.
+      Defines google.maps.importLibrary() so js/main.js can pull in the
+      "maps", "routes", "marker" and "places" libraries on demand.
+
+      👉 ONLY THING TO EDIT: paste your Google Maps API key in the
+         `key:` line below (search for "PASTE YOUR GOOGLE MAPS API KEY HERE").
+
+      Google Cloud checklist for that key:
+        • Billing account linked to the project
+        • APIs enabled: Maps JavaScript API, Routes API, Places API (New)
+        • Key > Application restrictions > HTTP referrers:
+            https://aution.co.za/*
+            https://www.aution.co.za/*
+            http://localhost:*/*      (local testing only)
+        • Key > API restrictions: the three APIs above
+      Use the SAME key in index.html (home-page search).
+    -->
+    <script>
+      ((g) => {
+        var h,
+          a,
+          k,
+          p = "The Google Maps JavaScript API",
+          c = "google",
+          l = "importLibrary",
+          q = "__ib__",
+          m = document,
+          b = window;
+        b = b[c] || (b[c] = {});
+        var d = b.maps || (b.maps = {}),
+          r = new Set(),
+          e = new URLSearchParams(),
+          u = () =>
+            h ||
+            (h = new Promise(async (f, n) => {
+              await (a = m.createElement("script"));
+              e.set("libraries", [...r] + "");
+              for (k in g)
+                e.set(
+                  k.replace(/[A-Z]/g, (t) => "_" + t[0].toLowerCase()),
+                  g[k],
+                );
+              e.set("callback", c + ".maps." + q);
+              a.src = `https://maps.${c}apis.com/maps/api/js?` + e;
+              d[q] = f;
+              a.onerror = () => (h = n(Error(p + " could not load.")));
+              a.nonce = m.querySelector("script[nonce]")?.nonce || "";
+              m.head.append(a);
+            }));
+        d[l]
+          ? console.warn(p + " only loads once. Ignoring:", g)
+          : (d[l] = (f, ...n) => r.add(f) && u().then(() => d[l](f, ...n)));
+      })({
+        key: "PASTE_YOUR_GOOGLE_MAPS_API_KEY_HERE", // 👈 PASTE YOUR GOOGLE MAPS API KEY HERE (keep the quotes)
+        v: "weekly",
+      });
+    </script>
   </head>
   <body data-page="book">
     <!-- ===== TOP BAR ===== -->
@@ -216,36 +270,7 @@
                 role="tab"
                 aria-selected="true"
               >
-                <span class="tt-icon"
-                  ><svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                  >
-                    <line
-                      x1="5"
-                      y1="12"
-                      x2="19"
-                      y2="12"
-                      stroke-linecap="round"
-                    />
-                    <polyline
-                      points="12 5 19 12 12 19"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    /></svg
-                ></span>
-                <span class="tt-info">
-                  <span class="tt-label-row"
-                    ><span class="tt-label">One-way</span
-                    ><span class="tt-badge">RECOMMENDED</span></span
-                  >
-                  <span class="tt-sub">Straight there</span>
-                </span>
-                <span class="tt-price-col">
-                  <span class="tt-price" id="ttPriceOneway">—</span>
-                </span>
+                One-way
               </button>
               <button
                 type="button"
@@ -254,47 +279,7 @@
                 role="tab"
                 aria-selected="false"
               >
-                <span class="tt-icon"
-                  ><svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                  >
-                    <path
-                      d="M17 1l4 4-4 4"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                    <path
-                      d="M3 11V9a4 4 0 014-4h14"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                    <path
-                      d="M7 23l-4-4 4-4"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                    <path
-                      d="M21 13v2a4 4 0 01-4 4H3"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    /></svg
-                ></span>
-                <span class="tt-info">
-                  <span class="tt-label-row"
-                    ><span class="tt-label">Return trip</span
-                    ><span class="tt-badge tt-badge--save" id="ttSaveBadge"
-                      >SAVE 15%</span
-                    ></span
-                  >
-                  <span class="tt-sub">There and back, same driver</span>
-                </span>
-                <span class="tt-price-col">
-                  <span class="tt-price-was" id="ttPriceReturnWas">—</span>
-                  <span class="tt-price" id="ttPriceReturn">—</span>
-                </span>
+                Return trip
               </button>
             </div>
             <div class="est-bar" id="estBar" style="display: none">
@@ -632,7 +617,6 @@
       </div>
     </footer>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
     <script src="js/main.js"></script>
   </body>
 </html>
